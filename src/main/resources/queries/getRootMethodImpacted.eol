@@ -1,0 +1,18 @@
+var methodDeclarationsModified = MethodDeclaration.all.select(m | methodModifiedNames.includes(m.eContainer.name+"$"+m.name.asString()));
+
+for (m in methodDeclarationsModified) {
+    m.name.println(" this method has been modified");
+}
+var measurementToModifiedMethods = Measurement.all.select(m | methodDeclarationsModified.includes(m.measurand));
+
+return measurementToModifiedMethods.collect(m | getMethodDeclarationImpacted(m).name);
+
+operation getMethodDeclarationImpacted(m : Measurement) : MethodDeclaration {
+    var rs = m.inbound;
+    if (rs.isDefined() and rs.from.isDefined() and not rs.from.isEmpty() and rs.from.at(0).isKindOf(Measurement)) {
+        return getMethodDeclarationImpacted(rs.from.at(0));
+    } else {
+        return m.measurand;
+    }
+}
+

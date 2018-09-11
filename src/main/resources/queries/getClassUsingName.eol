@@ -1,0 +1,2 @@
+return ClassDeclaration.all.select(c | c.name == className).first();
+
