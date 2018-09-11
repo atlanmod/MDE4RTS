@@ -94,7 +94,7 @@ public class GitCaller {
             diffFormatter.setDiffAlgorithm(DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.HISTOGRAM));
             List<DiffEntry> diffEntryList = diffFormatter.scan(current, future);
 
-            return new RegressionTestSelection(gitFolder, pomFolder, diffEntryList, diffFormatter).analyse();
+            return new RegressionTestSelection(gitFolder, pomFolder, diffEntryList, diffFormatter).getAllMethodsImpacted();
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Couldn't build the revision tree", e);
         }
