@@ -1,0 +1,16 @@
+
+var method = MethodDeclaration.all.select(m | m.name == methodDeclaration).first();
+
+var measurementToModifiedMethod = Measurement.all.select(m | m.measurand.isDefined() and m.measurand == method);
+
+return measurementToModifiedMethod.collect(m | getMethodDeclarationImpacted(m).name);
+
+operation getMethodDeclarationImpacted(m : Measurement) : MethodDeclaration {
+    var rs = m.inbound;
+    if (rs.isDefined() and rs.from.isDefined() and not rs.from.isEmpty() and rs.from.at(0).isKindOf(Measurement)) {
+        return getMethodDeclarationImpacted(rs.from.at(0));
+    } else {
+        return m.measurand;
+    }
+}
+

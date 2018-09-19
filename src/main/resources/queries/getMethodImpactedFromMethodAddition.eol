@@ -1,0 +1,19 @@
+//1- check that it's not a test using @Test
+//2- If it's not a test: verify that there's no @Override
+//3- if Override: get impacts through inheritance
+//4- else no impacts can be computed
+
+
+operation getMethodDeclarationImpacted(m : Measurement) : MethodDeclaration {
+    var rs = m.inbound;
+    var method;
+
+    if (rs.isDefined() and rs.from.isDefined() and not rs.from.isEmpty() and rs.from.at(0).isKindOf(Measurement)) {
+        method = getMethodDeclarationImpacted(rs.from.at(0));
+    } else {
+        method =  m.measurand;
+    }
+
+    method.annotations.println("annotations: ");
+    return method;
+}
