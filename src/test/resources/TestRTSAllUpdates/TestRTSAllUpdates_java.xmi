@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="ASCII"?>
+<java:Model xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:java="http://www.eclipse.org/MoDisco/Java/0.2.incubation/java" name="TestRTSAllUpdates">
+  <ownedElements name="com">
+    <ownedPackages name="tblf">
+      <ownedElements xsi:type="java:ClassDeclaration" originalCompilationUnit="//@compilationUnits.0" name="App" usagesInTypeAccess="//@ownedElements.0/@ownedPackages.0/@ownedElements.1/@superClass">
+        <comments xsi:type="java:Javadoc" originalCompilationUnit="//@compilationUnits.0" content="/**&#xA; * Hello world!&#xA; *&#xA; */" prefixOfParent="true">
+          <tags originalCompilationUnit="//@compilationUnits.0">
+            <fragments xsi:type="java:TextElement" originalCompilationUnit="//@compilationUnits.0" text="Hello world!"/>
+          </tags>
+        </comments>
+        <modifier visibility="public"/>
+        <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.0" name="foo">
+          <modifier visibility="public"/>
+          <returnType type="//@orphanTypes.5"/>
+        </bodyDeclarations>
+        <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.0" name="bar">
+          <modifier visibility="public"/>
+          <returnType type="//@orphanTypes.5"/>
+        </bodyDeclarations>
+        <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.0" name="methodThatWillBeDeletedInNextRevision">
+          <modifier visibility="public"/>
+          <returnType type="//@orphanTypes.5"/>
+        </bodyDeclarations>
+        <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.0" name="methodThatWillBeOverriden">
+          <modifier visibility="public"/>
+          <returnType type="//@orphanTypes.5"/>
+        </bodyDeclarations>
+        <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.0" name="methodThatIsOverriden" redefinitions="//@ownedElements.0/@ownedPackages.0/@ownedElements.1/@bodyDeclarations.0">
+          <modifier visibility="public"/>
+          <returnType type="//@orphanTypes.5"/>
+        </bodyDeclarations>
+        <bodyDeclarations xsi:type="java:ClassDeclaration" originalCompilationUnit="//@compilationUnits.0" name="AppSubClass">
+          <modifier visibility="public" static="true"/>
+          <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.0" name="subMethod">
+            <modifier visibility="public"/>
+            <returnType type="//@orphanTypes.5"/>
+          </bodyDeclarations>
+        </bodyDeclarations>
+      </ownedElements>
+      <ownedElements xsi:type="java:ClassDeclaration" originalCompilationUnit="//@compilationUnits.1" name="AppChild">
+        <modifier visibility="public"/>
+        <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.1" name="methodThatIsOverriden" redefinedMethodDeclaration="//@ownedElements.0/@ownedPackages.0/@ownedElements.0/@bodyDeclarations.4">
+          <annotations originalCompilationUnit="//@compilationUnits.1">
+            <type type="//@ownedElements.1/@ownedPackages.0/@ownedElements.0"/>
+          </annotations>
+          <modifier visibility="public"/>
+          <returnType type="//@orphanTypes.5"/>
+        </bodyDeclarations>
+        <superClass type="//@ownedElements.0/@ownedPackages.0/@ownedElements.0"/>
+      </ownedElements>
+      <ownedElements xsi:type="java:ClassDeclaration" originalCompilationUnit="//@compilationUnits.2" name="AppTest">
+        <comments xsi:type="java:Javadoc" originalCompilationUnit="//@compilationUnits.2" content="/**&#xA; * Unit test for simple App.&#xA; */" prefixOfParent="true">
+          <tags originalCompilationUnit="//@compilationUnits.2">
+            <fragments xsi:type="java:TextElement" originalCompilationUnit="//@compilationUnits.2" text="Unit test for simple App."/>
+          </tags>
+        </comments>
+        <modifier visibility="public"/>
+        <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.2" name="testOne">
+          <comments xsi:type="java:Javadoc" originalCompilationUnit="//@compilationUnits.2" content="/**&#xA;     * Rigorous Test :-)&#xA;     */" prefixOfParent="true">
+            <tags originalCompilationUnit="//@compilationUnits.2">
+              <fragments xsi:type="java:TextElement" originalCompilationUnit="//@compilationUnits.2" text="Rigorous Test :-)"/>
+            </tags>
+          </comments>
+          <annotations originalCompilationUnit="//@compilationUnits.2">
+            <type type="//@ownedElements.2/@ownedPackages.0/@ownedElements.1"/>
+          </annotations>
+          <modifier visibility="public"/>
+          <returnType type="//@orphanTypes.5"/>
+        </bodyDeclarations>
+        <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.2" name="testTwo">
+          <annotations originalCompilationUnit="//@compilationUnits.2">
+            <type type="//@ownedElements.2/@ownedPackages.0/@ownedElements.1"/>
+          </annotations>
+          <modifier visibility="public"/>
+          <returnType type="//@orphanTypes.5"/>
+        </bodyDeclarations>
+        <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.2" name="testThree">
+          <annotations originalCompilationUnit="//@compilationUnits.2">
+            <type type="//@ownedElements.2/@ownedPackages.0/@ownedElements.1"/>
+          </annotations>
+          <modifier visibility="public"/>
+          <returnType type="//@orphanTypes.5"/>
+        </bodyDeclarations>
+        <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.2" name="testFour">
+          <annotations originalCompilationUnit="//@compilationUnits.2">
+            <type type="//@ownedElements.2/@ownedPackages.0/@ownedElements.1"/>
+          </annotations>
+          <modifier visibility="public"/>
+          <returnType type="//@orphanTypes.5"/>
+        </bodyDeclarations>
+        <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.2" name="testFive">
+          <annotations originalCompilationUnit="//@compilationUnits.2">
+            <type type="//@ownedElements.2/@ownedPackages.0/@ownedElements.1"/>
+          </annotations>
+          <modifier visibility="public"/>
+          <returnType type="//@orphanTypes.5"/>
+        </bodyDeclarations>
+        <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.2" name="testSix">
+          <annotations originalCompilationUnit="//@compilationUnits.2">
+            <type type="//@ownedElements.2/@ownedPackages.0/@ownedElements.1"/>
+          </annotations>
+          <modifier visibility="public"/>
+          <returnType type="//@orphanTypes.5"/>
+        </bodyDeclarations>
+        <bodyDeclarations xsi:type="java:MethodDeclaration" originalCompilationUnit="//@compilationUnits.2" name="testSeven">
+          <annotations originalCompilationUnit="//@compilationUnits.2">
+            <type type="//@ownedElements.2/@ownedPackages.0/@ownedElements.1"/>
+          </annotations>
+          <modifier visibility="public"/>
+          <returnType type="//@orphanTypes.5"/>
+        </bodyDeclarations>
+      </ownedElements>
+    </ownedPackages>
+  </ownedElements>
+  <ownedElements name="java" proxy="true">
+    <ownedPackages name="lang" proxy="true">
+      <ownedElements xsi:type="java:AnnotationTypeDeclaration" name="Override" proxy="true" usagesInTypeAccess="//@ownedElements.0/@ownedPackages.0/@ownedElements.1/@bodyDeclarations.0/@annotations.0/@type"/>
+    </ownedPackages>
+  </ownedElements>
+  <ownedElements name="org" proxy="true">
+    <ownedPackages name="junit" proxy="true">
+      <ownedElements xsi:type="java:ClassDeclaration" name="Assert" proxy="true" usagesInImports="//@compilationUnits.2/@imports.0"/>
+      <ownedElements xsi:type="java:AnnotationTypeDeclaration" name="Test" proxy="true" usagesInImports="//@compilationUnits.2/@imports.1" usagesInTypeAccess="//@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.0/@annotations.0/@type //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.1/@annotations.0/@type //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.2/@annotations.0/@type //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.3/@annotations.0/@type //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.4/@annotations.0/@type //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.5/@annotations.0/@type //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.6/@annotations.0/@type"/>
+    </ownedPackages>
+  </ownedElements>
+  <orphanTypes xsi:type="java:PrimitiveTypeInt" name="int"/>
+  <orphanTypes xsi:type="java:PrimitiveTypeLong" name="long"/>
+  <orphanTypes xsi:type="java:PrimitiveTypeFloat" name="float"/>
+  <orphanTypes xsi:type="java:PrimitiveTypeDouble" name="double"/>
+  <orphanTypes xsi:type="java:PrimitiveTypeBoolean" name="boolean"/>
+  <orphanTypes xsi:type="java:PrimitiveTypeVoid" name="void" usagesInTypeAccess="//@ownedElements.0/@ownedPackages.0/@ownedElements.0/@bodyDeclarations.0/@returnType //@ownedElements.0/@ownedPackages.0/@ownedElements.0/@bodyDeclarations.1/@returnType //@ownedElements.0/@ownedPackages.0/@ownedElements.0/@bodyDeclarations.2/@returnType //@ownedElements.0/@ownedPackages.0/@ownedElements.0/@bodyDeclarations.3/@returnType //@ownedElements.0/@ownedPackages.0/@ownedElements.0/@bodyDeclarations.4/@returnType //@ownedElements.0/@ownedPackages.0/@ownedElements.0/@bodyDeclarations.5/@bodyDeclarations.0/@returnType //@ownedElements.0/@ownedPackages.0/@ownedElements.1/@bodyDeclarations.0/@returnType //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.0/@returnType //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.1/@returnType //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.2/@returnType //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.3/@returnType //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.4/@returnType //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.5/@returnType //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.6/@returnType"/>
+  <orphanTypes xsi:type="java:PrimitiveTypeChar" name="char"/>
+  <orphanTypes xsi:type="java:PrimitiveTypeShort" name="short"/>
+  <orphanTypes xsi:type="java:PrimitiveTypeByte" name="byte"/>
+  <compilationUnits name="App.java" originalFilePath="/home/thibaultblf/Documents/git/MDE4RTS/src/test/resources/TestRTSAllUpdates/src/main/java/com/tblf/App.java" commentList="//@ownedElements.0/@ownedPackages.0/@ownedElements.0/@comments.0" package="//@ownedElements.0/@ownedPackages.0" types="//@ownedElements.0/@ownedPackages.0/@ownedElements.0"/>
+  <compilationUnits name="AppChild.java" originalFilePath="/home/thibaultblf/Documents/git/MDE4RTS/src/test/resources/TestRTSAllUpdates/src/main/java/com/tblf/AppChild.java" package="//@ownedElements.0/@ownedPackages.0" types="//@ownedElements.0/@ownedPackages.0/@ownedElements.1"/>
+  <compilationUnits name="AppTest.java" originalFilePath="/home/thibaultblf/Documents/git/MDE4RTS/src/test/resources/TestRTSAllUpdates/src/test/java/com/tblf/AppTest.java" commentList="//@ownedElements.0/@ownedPackages.0/@ownedElements.2/@comments.0 //@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.0/@comments.0" package="//@ownedElements.0/@ownedPackages.0" types="//@ownedElements.0/@ownedPackages.0/@ownedElements.2">
+    <imports originalCompilationUnit="//@compilationUnits.2" importedElement="//@ownedElements.2/@ownedPackages.0/@ownedElements.0"/>
+    <imports originalCompilationUnit="//@compilationUnits.2" importedElement="//@ownedElements.2/@ownedPackages.0/@ownedElements.1"/>
+  </compilationUnits>
+</java:Model>

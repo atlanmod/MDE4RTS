@@ -1,0 +1,12 @@
+<hawkProperties>
+  <dbType>org.hawk.neo4j_v2.Neo4JDatabase</dbType>
+  <monitoredVCS class="set">
+    <string-array>
+      <string>file:///home/thibaultblf/Documents/git/MDE4RTS/src/test/resources/TestRTSAllUpdates/</string>
+      <string>org.hawk.localfolder.LocalFolder</string>
+      <string>false</string>
+    </string-array>
+  </monitoredVCS>
+  <minDelay>0</minDelay>
+  <maxDelay>0</maxDelay>
+</hawkProperties>

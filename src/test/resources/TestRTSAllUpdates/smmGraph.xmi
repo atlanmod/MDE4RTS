@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="ASCII"?>
+<smm:SmmModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:smm="org.omg.smm">
+  <libraries>
+    <measureElements xsi:type="smm:CollectiveMeasure"/>
+  </libraries>
+  <observations>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.AppTest"/>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="testOne" outRelationships="//@observations.0/@observedMeasures.2/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.3/@measurements.0/@measurementRelationships.0" outbound="//@observations.0/@observedMeasures.2/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.3/@measurements.0/@measurementRelationships.0">
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.0"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.App" inRelationships="//@observations.0/@observedMeasures.2/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.2/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.2/@measurements.0" from="//@observations.0/@observedMeasures.1/@measurements.0"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="foo" inRelationships="//@observations.0/@observedMeasures.3/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.3/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.3/@measurements.0" from="//@observations.0/@observedMeasures.1/@measurements.0"/>
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.0/@bodyDeclarations.0"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.AppTest"/>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="testSix" outRelationships="//@observations.0/@observedMeasures.6/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.7/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.8/@measurements.0/@measurementRelationships.0" outbound="//@observations.0/@observedMeasures.6/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.7/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.8/@measurements.0/@measurementRelationships.0">
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.5"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.App" inRelationships="//@observations.0/@observedMeasures.6/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.6/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.6/@measurements.0" from="//@observations.0/@observedMeasures.5/@measurements.0"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.AppChild" inRelationships="//@observations.0/@observedMeasures.7/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.7/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.7/@measurements.0" from="//@observations.0/@observedMeasures.5/@measurements.0"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="methodThatIsOverriden" inRelationships="//@observations.0/@observedMeasures.8/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.8/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.8/@measurements.0" from="//@observations.0/@observedMeasures.5/@measurements.0"/>
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.1/@bodyDeclarations.0"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.AppTest"/>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="testTwo" outRelationships="//@observations.0/@observedMeasures.11/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.12/@measurements.0/@measurementRelationships.0" outbound="//@observations.0/@observedMeasures.11/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.12/@measurements.0/@measurementRelationships.0">
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.1"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.App" inRelationships="//@observations.0/@observedMeasures.11/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.11/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.11/@measurements.0" from="//@observations.0/@observedMeasures.10/@measurements.0"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="bar" inRelationships="//@observations.0/@observedMeasures.12/@measurements.0/@measurementRelationships.0" outRelationships="//@observations.0/@observedMeasures.13/@measurements.0/@measurementRelationships.0" outbound="//@observations.0/@observedMeasures.13/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.12/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.12/@measurements.0" from="//@observations.0/@observedMeasures.10/@measurements.0"/>
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.0/@bodyDeclarations.1"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="foo" inRelationships="//@observations.0/@observedMeasures.13/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.13/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.13/@measurements.0" from="//@observations.0/@observedMeasures.12/@measurements.0"/>
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.0/@bodyDeclarations.0"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.AppTest"/>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="testSeven" outRelationships="//@observations.0/@observedMeasures.16/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.17/@measurements.0/@measurementRelationships.0" outbound="//@observations.0/@observedMeasures.16/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.17/@measurements.0/@measurementRelationships.0">
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.6"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.App$AppSubClass" inRelationships="//@observations.0/@observedMeasures.16/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.16/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.16/@measurements.0" from="//@observations.0/@observedMeasures.15/@measurements.0"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="subMethod" inRelationships="//@observations.0/@observedMeasures.17/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.17/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.17/@measurements.0" from="//@observations.0/@observedMeasures.15/@measurements.0"/>
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.0/@bodyDeclarations.5/@bodyDeclarations.0"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.AppTest"/>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="testThree">
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.2"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.AppTest"/>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="testFive" outRelationships="//@observations.0/@observedMeasures.22/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.23/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.24/@measurements.0/@measurementRelationships.0" outbound="//@observations.0/@observedMeasures.22/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.23/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.24/@measurements.0/@measurementRelationships.0">
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.4"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.App" inRelationships="//@observations.0/@observedMeasures.22/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.22/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.22/@measurements.0" from="//@observations.0/@observedMeasures.21/@measurements.0"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.AppChild" inRelationships="//@observations.0/@observedMeasures.23/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.23/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.23/@measurements.0" from="//@observations.0/@observedMeasures.21/@measurements.0"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="methodThatWillBeOverriden" inRelationships="//@observations.0/@observedMeasures.24/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.24/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.24/@measurements.0" from="//@observations.0/@observedMeasures.21/@measurements.0"/>
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.0/@bodyDeclarations.3"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.AppTest"/>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="testFour" outRelationships="//@observations.0/@observedMeasures.27/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.28/@measurements.0/@measurementRelationships.0" outbound="//@observations.0/@observedMeasures.27/@measurements.0/@measurementRelationships.0 //@observations.0/@observedMeasures.28/@measurements.0/@measurementRelationships.0">
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.2/@bodyDeclarations.3"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="com.tblf.App" inRelationships="//@observations.0/@observedMeasures.27/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.27/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.27/@measurements.0" from="//@observations.0/@observedMeasures.26/@measurements.0"/>
+      </measurements>
+    </observedMeasures>
+    <observedMeasures measure="//@libraries.0/@measureElements.0">
+      <measurements xsi:type="smm:BinaryMeasurement" name="methodThatWillBeDeletedInNextRevision" inRelationships="//@observations.0/@observedMeasures.28/@measurements.0/@measurementRelationships.0" inbound="//@observations.0/@observedMeasures.28/@measurements.0/@measurementRelationships.0">
+        <measurementRelationships xsi:type="smm:BaseNMeasurementRelationship" name="follows" to="//@observations.0/@observedMeasures.28/@measurements.0" from="//@observations.0/@observedMeasures.26/@measurements.0"/>
+        <measurand href="TestRTSAllUpdates_java.xmi#//@ownedElements.0/@ownedPackages.0/@ownedElements.0/@bodyDeclarations.2"/>
+      </measurements>
+    </observedMeasures>
+  </observations>
+</smm:SmmModel>
