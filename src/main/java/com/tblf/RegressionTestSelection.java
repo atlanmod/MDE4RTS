@@ -3,14 +3,10 @@ package com.tblf;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.google.common.collect.Range;
-import com.tblf.gitdiff.NonJavaFileException;
-import com.tblf.gitdiff.RangeFactory;
 import com.tblf.parsing.indexer.HawkQuery;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
-import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
@@ -28,8 +24,6 @@ import java.util.stream.Collectors;
 
 public class RegressionTestSelection {
 
-    private static final RangeFactory<Integer> RANGE_FACTORY = new RangeFactory<>();
-
     private Collection<MethodDeclaration> newMethods;
     private Collection<MethodDeclaration> updatedMethods;
     private Collection<MethodDeclaration> deletedMethods;
@@ -42,7 +36,6 @@ public class RegressionTestSelection {
     private File gitFolder;
     private EOLQueryBuilder eolQueryBuilder;
 
-    private Collection<DiffEntry> diffEntryCollection;
     private Collection<String> testImpacted;
 
     private ObjectId oldId;
@@ -51,6 +44,14 @@ public class RegressionTestSelection {
     private static final Logger LOGGER = Logger.getLogger(RegressionTestSelection.class.getName());
 
 
+    /**
+     * Constructor
+     * @param folder the {@link File} directory that contains the .git repository
+     * @param pomFolder the {@link File} directory that contains the pom.xml file
+     * @param diffFormat a {@link DiffFormatter}
+     * @param oldId the {@link ObjectId} of the old revision
+     * @param newId the {@link ObjectId} of the new revision
+     */
     public RegressionTestSelection(File folder, File pomFolder, DiffFormatter diffFormat, ObjectId oldId, ObjectId newId) {
 
         this.gitFolder = folder;
@@ -60,7 +61,7 @@ public class RegressionTestSelection {
 
         this.hawkQuery = new HawkQuery(pomFolder);
 
-        this.testImpacted = new ArrayList<>();
+        this.testImpacted = new HashSet<>();
         this.eolQueryBuilder = new EOLQueryBuilder();
 
         this.filesJavaParsedNewRevision = new HashMap<>();
@@ -71,9 +72,15 @@ public class RegressionTestSelection {
         this.deletedMethods = new ArrayList<>();
     }
 
-
+    /**
+     * Get all the methods impacted by modifications between two revisions
+     *
+     * @return a {@link Collection} of method qualified names as {@link String}
+     */
+    @SuppressWarnings("unchecked")
     public Collection<String> getAllMethodsImpacted() {
-        hawkQuery.queryWithInputEOLQuery(eolQueryBuilder.createUpdateMethodDeclarationsWithQN());
+
+        Collection<DiffEntry> diffEntryCollection;
         try {
             diffEntryCollection = diffFormatter.scan(oldId, newId);
         } catch (IOException e) {
@@ -83,27 +90,41 @@ public class RegressionTestSelection {
 
         diffEntryCollection.forEach(diffEntry -> {
             try {
-
                 // The file is not a Java File.
-                if (!diffEntry.getNewPath().equals("/dev/null") && !diffEntry.getNewPath().endsWith(".java"))
-                    throw new NonJavaFileException("The diff entry: " + diffEntry.getNewPath() + " does not concern a Java file");
-
-                if (diffEntry.getOldPath().equals("/dev/null")) {
+                if (diffEntry.getOldPath().equals("/dev/null") && diffEntry.getNewPath().endsWith(".java")) {
                     LOGGER.info("File added in the oldId revision: " + diffEntry.getNewPath());
                     testImpacted.addAll(manageNewFile(diffEntry)); // The file is new
-                } else {
+                } else if (diffEntry.getNewPath().equals("/dev/null") && diffEntry.getOldPath().endsWith(".java")) {
+                    LOGGER.info("File deleted in the newId revision: " + diffEntry.getOldPath());
+                    testImpacted.addAll(manageDeletedFile(diffEntry));
+                } else if (diffEntry.getNewPath().endsWith(".java")){
                     identifyModificationType(diffEntry);
                 }
             } catch (Exception e) {
-                LOGGER.log(Level.INFO, "Could not analyze the diffEntry", e);
+                LOGGER.log(Level.INFO, "Could not analyze the diffEntry: ", e);
             }
         });
 
-        filterMethodModified();
-        computeImpacts();
-        
-        testImpacted.forEach(s -> {
-            LOGGER.info(s + " has been impacted by the changes");
+        deletedMethods.forEach(methodDeclaration -> {
+            LOGGER.log(Level.INFO, eolQueryBuilder.getQualifiedName(methodDeclaration) + " deletion impacts computed");
+            testImpacted.addAll((Collection<? extends String>) hawkQuery.queryWithInputEOLQuery(eolQueryBuilder.createGetImpactOfSingleMethodUpdate(methodDeclaration)));
+        });
+
+        updatedMethods.forEach(methodDeclaration -> {
+            LOGGER.log(Level.INFO, eolQueryBuilder.getQualifiedName(methodDeclaration) + " update impacts computed");
+            testImpacted.addAll((Collection<? extends String>) hawkQuery.queryWithInputEOLQuery(eolQueryBuilder.createGetImpactOfSingleMethodUpdate(methodDeclaration)));
+        });
+
+        newMethods.forEach(methodDeclaration -> {
+            LOGGER.log(Level.INFO, eolQueryBuilder.getQualifiedName(methodDeclaration) + " addition impacts computed");
+            methodDeclaration.getAnnotations().forEach(annotationExpr -> {
+                if ("Test".equals(annotationExpr.getNameAsString())) {
+                    testImpacted.add(eolQueryBuilder.getQualifiedName(methodDeclaration));
+                }
+                if ("Override".equals(annotationExpr.getNameAsString())) {
+                    testImpacted.addAll((Collection<? extends String>) hawkQuery.queryWithInputEOLQuery(eolQueryBuilder.createGetImpactOfSingleMethodAddition(methodDeclaration)));
+                }
+            });
         });
 
         try {
@@ -111,135 +132,37 @@ public class RegressionTestSelection {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return testImpacted;
     }
 
     /**
-     * Iterates over the selected methods, and computes their impacts according to the update done.
-     */
-    private void computeImpacts() {
-        deletedMethods.forEach(methodDeclaration -> {
-            Object o = hawkQuery.queryWithInputEOLQuery(eolQueryBuilder.createGetImpactOfSingleMethodUpdate(methodDeclaration));
-            System.out.println("Methods selected by "+methodDeclaration.getNameAsString()+" deletion: "+o);
-        });
-
-        updatedMethods.forEach(methodDeclaration -> {
-            Object o = hawkQuery.queryWithInputEOLQuery(eolQueryBuilder.createGetImpactOfSingleMethodUpdate(methodDeclaration));
-            System.out.println("Methods selected by "+methodDeclaration.getNameAsString()+" update: "+o);
-        });
-
-        newMethods.forEach(methodDeclaration -> {
-            Object o = hawkQuery.queryWithInputEOLQuery(eolQueryBuilder.createGetImpactOfSingleMethodAddition(methodDeclaration));
-            System.out.println("Methods selected by "+methodDeclaration.getNameAsString()+" addition: "+o);
-        });
-    }
-
-    /**
-     * Iterates over a {@link DiffEntry} and manage each type of {@link Edit}
+     * Compare two files that has been updated in a diffentry and sort the MethodDeclarations by modification types
      *
      * @param diffEntry the {@link DiffEntry} considering the oldPath and the revision information
      * @throws IOException if the {@link DiffEntry} cannot be analyzed
      */
     private void identifyModificationType(DiffEntry diffEntry) throws IOException {
-        diffFormatter.toFileHeader(diffEntry).toEditList().forEach(edit -> {
-            switch (edit.getType()) {
-                case DELETE:
-                    manageDeleteEdition(edit, diffEntry);
-                    break;
-                case REPLACE:
-                    manageReplaceEdition(edit, diffEntry);
-                    break;
-                case INSERT:
-                    manageInsertEdition(edit, diffEntry);
-                    break;
-                case EMPTY:
+        Map<String, MethodDeclaration> newFileMethods = getOrParseFileNewRev(diffEntry).getChildNodesByType(MethodDeclaration.class).stream().collect(Collectors.toMap(o -> eolQueryBuilder.getQualifiedName(o), o -> o));
+        Map<String, MethodDeclaration> oldFileMethods = getOrParseFileOldRev(diffEntry).getChildNodesByType(MethodDeclaration.class).stream().collect(Collectors.toMap(o -> eolQueryBuilder.getQualifiedName(o), o -> o));
 
+        newFileMethods.forEach((s, newMethod) -> {
+            MethodDeclaration oldMethod = oldFileMethods.get(s);
+            //The method does not exist in the previous revision, so it's new
+            if (oldMethod == null) {
+                newMethods.add(newMethod);
+            } else if (oldMethod.toString().length() != newMethod.toString().length() || !oldMethod.toString().equals(newMethod.toString())) {
+                //The method is different in the new revision. it has been updated
+                updatedMethods.add(newMethod);
             }
         });
-    }
 
-    /**
-     * Iterates over the methods impacted by replacement, deletion and addition, and swap them accross list in order to adapt the RTS
-     * For instance: Lets consider a method that have been selected in the case of a deletion
-     * If the method is still existing in the new code, then only *internal* lines of code have been deleted, and then the impacts
-     * can be computed in a straightforward way, just like replacement. Hence the method will be removed from the list referencing the
-     * deleted method, and put in the modified method list instead.
-     * @warning Stream.removeAll() has a quadratic complexity. If the lists are large (more than 10 000) elements, using {@link Collectors}.partitioningBy
-     * is more cost-efficient
-     *
-     */
-    private void filterMethodModified() {
-        Collection<MethodDeclaration> existingMethodWithCodeAdded = newMethods
-                .stream()
-                .filter(methodDeclaration -> (Boolean) hawkQuery.queryWithInputEOLQuery(eolQueryBuilder.createIsMethodExisting(methodDeclaration)))
-                .collect(Collectors.toList());
-
-        Collection<MethodDeclaration> newMethodAddedDuringCodeReplacement = updatedMethods
-                .stream()
-                .filter(methodDeclaration -> (Boolean) hawkQuery.queryWithInputEOLQuery(eolQueryBuilder.createIsMethodNotExisting(methodDeclaration)))
-                .peek(methodDeclaration -> System.out.println("Method moved from existing to new "+methodDeclaration.getNameAsString()))
-                .collect(Collectors.toList());
-
-        updatedMethods.removeAll(newMethodAddedDuringCodeReplacement);
-        newMethods.addAll(newMethodAddedDuringCodeReplacement);
-
-        updatedMethods.addAll(existingMethodWithCodeAdded);
-        newMethods.removeAll(existingMethodWithCodeAdded);
-    }
-
-    /**
-     * Takes an {@link Edit} and gets all the methods modified by this edition
-     *
-     * @param edit      the {@link Edit}
-     * @param diffEntry a {@link DiffEntry} used to linkn the {@link Edit} to a {@link File}
-     */
-    private void manageReplaceEdition(Edit edit, DiffEntry diffEntry) {
-        Range<Integer> range = RANGE_FACTORY.createOpenOrSingletonRange(edit.getBeginB(), edit.getEndB());
-        File updatedFile = new File(gitFolder, diffEntry.getOldPath());
-        CompilationUnit compilationUnit = getOrParseFileNewRev(updatedFile);
-        Collection<MethodDeclaration> methodDeclarations = computeModifiedMethodInCompilationUnit(range, compilationUnit);
-        updatedMethods.addAll(methodDeclarations);
-    }
-
-    /**
-     * Takes an {@link Edit} and get all the methods that have been impacted (deleted partially or totally) by this edition
-     *
-     * @param edit      the {@link Edit}
-     * @param diffEntry the Corresponding {@link DiffEntry}
-     */
-    private void manageDeleteEdition(Edit edit, DiffEntry diffEntry) {
-        Range<Integer> range = RANGE_FACTORY.createOpenOrSingletonRange(edit.getBeginA(), edit.getEndA());
-        CompilationUnit compilationUnit = getOrParseFileOldRev(diffEntry);
-        Collection<MethodDeclaration> methodDeclarations = computeModifiedMethodInCompilationUnit(range, compilationUnit);
-        deletedMethods.addAll(methodDeclarations);
-    }
-
-    /**
-     * Takes an {@link Edit} and a {@link DiffEntry} and g
-     *
-     * @param edit
-     * @param diffEntry
-     */
-    private void manageInsertEdition(Edit edit, DiffEntry diffEntry) {
-        Range<Integer> range = RANGE_FACTORY.createOpenOrSingletonRange(edit.getBeginB(), edit.getEndB());
-        File updatedFile = new File(gitFolder, diffEntry.getNewPath());
-        CompilationUnit compilationUnit = getOrParseFileNewRev(updatedFile);
-        Collection<MethodDeclaration> methodDeclarations = computeModifiedMethodInCompilationUnit(range, compilationUnit);
-        newMethods.addAll(methodDeclarations);
-    }
-
-    /**
-     * Takes a {@link CompilationUnit}, a {@link Range} of lines of code updated, and returns all the impacted {@link MethodDeclaration}
-     *
-     * @param range           a {@link Range}
-     * @param compilationUnit a {@link CompilationUnit}
-     * @return a {@link Collection} or {@link MethodDeclaration}
-     */
-    private Collection<MethodDeclaration> computeModifiedMethodInCompilationUnit(Range range, CompilationUnit compilationUnit) {
-        return compilationUnit.getChildNodesByType(MethodDeclaration.class).stream()
-                .filter(methodDeclaration -> methodDeclaration.getRange().isPresent())
-                .filter(methodDeclaration -> range.isConnected(RANGE_FACTORY.createOpenOrSingletonRange(methodDeclaration.getRange().get().begin.line, methodDeclaration.getRange().get().end.line)))
-                .collect(Collectors.toList());
+        oldFileMethods.forEach((s, oldMethod) -> {
+            MethodDeclaration newMethod = newFileMethods.get(s);
+            //The method does not exist in the next revision, so it has been deleted
+            if (newMethod == null) {
+                deletedMethods.add(oldMethod);
+            }
+        });
     }
 
     /**
@@ -247,7 +170,7 @@ public class RegressionTestSelection {
      *
      * @param diffEntry a {@link DiffEntry}
      * @return a {@link Collection} of Test names as {@link String} to run
-     * @throws IOException
+     * @throws IOException if the new file cannot be found or parsed
      */
     private Collection<? extends String> manageNewFile(DiffEntry diffEntry) throws IOException {
         File file = new File(gitFolder, diffEntry.getNewPath());
@@ -263,21 +186,32 @@ public class RegressionTestSelection {
                 .filter(methodDeclaration -> methodDeclaration.getAnnotations().stream()
                         .anyMatch(annotationExpr -> annotationExpr.getName().asString().equals("Test"))
                 )
-                .map(methodDeclaration -> methodDeclaration.getNameAsString())
+                .map(methodDeclaration -> eolQueryBuilder.getQualifiedName(methodDeclaration))
                 .collect(Collectors.toList());
-
-        //FIXME: map to qualified name, and not only method name
     }
 
+    /**
+     * Parses a file that has been deleted and add all the method deleted in the list of deleted methods for impact analysis
+     *
+     * @param diffEntry a {@link DiffEntry}
+     * @return a {@link Collection} of {@link String} qualified names
+     */
+    private Collection<? extends String> manageDeletedFile(DiffEntry diffEntry) {
+        String fileContent = getOldFileContent(diffEntry);
+        CompilationUnit compilationUnit = JavaParser.parse(fileContent);
+        return compilationUnit.getChildNodesByType(MethodDeclaration.class).stream().map(methodDeclaration -> eolQueryBuilder.getQualifiedName(methodDeclaration)).collect(Collectors.toList());
+    }
 
     /**
      * Takes a file, and either parse it with {@link JavaParser} if the file hasnt been parsed yet
      * Or gets it in a hashmap
      *
-     * @param file the File to parse, or get
+     * @param diffEntry the {@link DiffEntry} considering the newPath and the revision information
      * @return the {@link CompilationUnit}
      */
-    private CompilationUnit getOrParseFileNewRev(File file) {
+
+    private CompilationUnit getOrParseFileNewRev(DiffEntry diffEntry) {
+        File file = new File(gitFolder, diffEntry.getNewPath());
         CompilationUnit compilationUnit;
 
         if (filesJavaParsedNewRevision.containsKey(file))
@@ -318,11 +252,8 @@ public class RegressionTestSelection {
 
     /**
      * Return the old version of a file considered by a {@link DiffEntry}
-     * //FIXME This method is expensive, and should be not used with its oldId state.
-     *
      * @param diffEntry A {@link DiffEntry}
      * @return a {@link String}, the full content of the old file
-     * @throws IOException
      */
     private String getOldFileContent(DiffEntry diffEntry) {
         String path = diffEntry.getOldPath();

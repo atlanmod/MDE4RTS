@@ -1,5 +1,6 @@
 package com.tblf;
 
+import com.tblf.parsing.indexer.HawkQuery;
 import com.tblf.parsing.parsingBehaviors.ParsingBehavior;
 import com.tblf.utils.ModelUtils;
 import org.eclipse.emf.common.util.URI;
@@ -7,18 +8,19 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
-import org.eclipse.gmt.modisco.java.AbstractMethodDeclaration;
-import org.eclipse.gmt.modisco.java.ConstructorDeclaration;
+import org.eclipse.gmt.modisco.java.*;
 import org.omg.smm.*;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-public class CoarseGrainedImpactAnalysisParsingBehavior extends ParsingBehavior {
-    private Map<String, AbstractMethodDeclaration> stringMethodDeclarationMap;
+public class MethodAccurateCallGraphParsingBehavior extends ParsingBehavior {
+    private Map<String, AbstractTypeDeclaration> stringTypeDeclarationMap;
+
     private static final SmmFactory FACTORY = SmmFactory.eINSTANCE;
 
     private Observation observation;
@@ -27,25 +29,24 @@ public class CoarseGrainedImpactAnalysisParsingBehavior extends ParsingBehavior 
 
     private Stack<BinaryMeasurement> methodStack;
 
-    public CoarseGrainedImpactAnalysisParsingBehavior(ResourceSet model) {
-        super(model);
+    private HawkQuery hawkQuery;
 
+    public MethodAccurateCallGraphParsingBehavior(ResourceSet model) {
+        super(model);
+        File file = new File(model.getResources().get(0).getURI().toString());
+        hawkQuery = new HawkQuery(file.getParentFile());
         model.getResources().removeIf(resource -> !resource.getURI().toString().contains("_java.xmi"));
 
         Resource jModel = model.getResources().stream().filter(resource -> resource.getURI().toString().contains("_java.xmi")).findFirst().get();
 
-        stringMethodDeclarationMap = new HashMap<>();
+        stringTypeDeclarationMap = new HashMap<>();
         methodStack = new Stack<>();
 
         //Build an index of the methods
         jModel.getAllContents().forEachRemaining(eObject -> {
-            if (eObject instanceof AbstractMethodDeclaration) {
-                if (eObject instanceof ConstructorDeclaration) {
-                    ConstructorDeclaration constructorDeclaration = (ConstructorDeclaration) eObject;
-                    constructorDeclaration.setName("<init>");
-                }
+            if (eObject instanceof AbstractTypeDeclaration) {
                 String qn = ModelUtils.getQualifiedName(eObject);
-                stringMethodDeclarationMap.put(qn, (AbstractMethodDeclaration) eObject); //faster to add "\n" here than cutting the traces
+                stringTypeDeclarationMap.put(qn, (AbstractTypeDeclaration) eObject);
             }
         });
 
@@ -80,30 +81,50 @@ public class CoarseGrainedImpactAnalysisParsingBehavior extends ParsingBehavior 
 
     }
 
-    public void manage(String trace) {
 
-        if (trace.startsWith(":")) {
+    public void manage(String trace) {
+        if (trace.startsWith(":")) { //New test, clear the stack
             methodStack.clear();
             trace = trace.replace(":", "");
         }
 
-        if (trace.startsWith(";")) { //end of method
-            if (!methodStack.isEmpty()) {
-                methodStack.pop();
-            }
-        } else {
-            //start of method
-            startMethodExecution(trace);
+        boolean isExitPoint = false;
+
+        if (trace.startsWith(";")) { //end of method, remove the method
+            isExitPoint = true;
+            trace = trace.replace(";", "");
         }
+
+        trace = trace.replace("\n", "");
+
+        String[] splittedTrace = trace.split("\\$");
+        String className, methodName;
+        if (splittedTrace.length > 2) {
+            // Consider internal classes
+            className = trace.substring(0, trace.lastIndexOf("$"));
+            methodName = splittedTrace[splittedTrace.length-1];
+        } else {
+            className = trace.split("\\$")[0];
+            methodName = trace.split("\\$")[1];
+        }
+
+        if ("<init>".equals(methodName)) methodName = className;
+
+        AbstractTypeDeclaration typeDeclaration = stringTypeDeclarationMap.get(className);
+        AbstractMethodDeclaration methodDeclaration = getMethodDeclarationFromTypeOrSuperTypes(typeDeclaration, methodName);
+
+        if (isExitPoint) {
+            methodStack.pop();
+        } else
+            startMethodExecution(methodDeclaration, methodName);
+
     }
 
-    private void startMethodExecution(String methodQN) {
-        methodQN = methodQN.replace("\n", "");
-        AbstractMethodDeclaration methodDeclaration = stringMethodDeclarationMap.get(methodQN);
-
-        if (methodDeclaration == null)
-            System.out.println("Couldn't find "+methodQN+" in the model");
-
+    /**
+     * \\TODO Consider parameters when querying methods.
+     * @param methodQN the Qualified name of a method, as a {@link String} e.g.: com.tblf.Clazz$methodName
+     */
+    private void startMethodExecution(AbstractMethodDeclaration methodDeclaration, String methodQN) {
         BinaryMeasurement measurement = createRootMeasurement(methodDeclaration);
         measurement.setName(methodQN);
 
@@ -126,9 +147,8 @@ public class CoarseGrainedImpactAnalysisParsingBehavior extends ParsingBehavior 
         BinaryMeasurement measurement = FACTORY.createBinaryMeasurement();
         measurement.setMeasurand(measurand);
 
-
         if (!methodStack.empty()) {
-            BinaryMeasurement previous = methodStack.peek();
+            BinaryMeasurement previous = methodStack.firstElement();
 
             //definition of the follows relationship
             BaseNMeasurementRelationship baseNMeasurementRelationship = FACTORY.createBaseNMeasurementRelationship();
@@ -143,5 +163,32 @@ public class CoarseGrainedImpactAnalysisParsingBehavior extends ParsingBehavior 
         }
 
         return measurement;
+    }
+
+    /**
+     * From a {@link TypeDeclaration}, check if the methodDeclaration with the given QN as {@link String} exist, and if yes, returns it.
+     * If not, check in the parent classes until finding the right class
+     * @param typeDeclaration a {@link TypeDeclaration}
+     * @return the corresponding {@link MethodDeclaration}
+     */
+    private MethodDeclaration getMethodDeclarationFromTypeOrSuperTypes(AbstractTypeDeclaration typeDeclaration, String methodDeclaration) {
+        return (MethodDeclaration) typeDeclaration.getBodyDeclarations().stream()
+                .filter(bodyDeclaration -> bodyDeclaration instanceof MethodDeclaration)
+                .filter(bodyDeclaration -> bodyDeclaration.getName().equals(methodDeclaration))
+                .findFirst()
+                .orElseGet(() -> {
+                    if (typeDeclaration.getAbstractTypeDeclaration() instanceof TypeDeclaration)
+                        return getMethodDeclarationFromTypeOrSuperTypes((TypeDeclaration) typeDeclaration.getAbstractTypeDeclaration(), methodDeclaration);
+                    else
+                        return null;
+                });
+    }
+
+    public void close() {
+        try {
+            hawkQuery.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 
 public class RegressionTestSelectionTest {
@@ -30,14 +31,8 @@ public class RegressionTestSelectionTest {
         File archive= new File("src/test/resources/TestRTSAllUpdates.zip");
         FileUtils.unzip(archive);
 
-        assert file.exists() && file.isDirectory();
-
-        Git git = Git.open(file);
-        git.checkout().setCreateBranch(true).setName("tmp").setStartPoint("3bef257c73092096339491206835f9b3005715bc").call();
-        App.main(new String[]{file.getAbsolutePath()});
-        Git.open(file).checkout().setName("master").call();
-
-        new GitCaller(file, file).compareCommits("3bef257c73092096339491206835f9b3005715bc", "master");
+        Collection<String> testImpacted = new GitCaller(file, file).compareCommits("master~1", "master");
+        testImpacted.forEach(System.out::println);
     }
 
     @After

@@ -2,18 +2,30 @@ package com.tblf;
 
 import com.tblf.linker.Calls;
 
-import java.util.logging.Logger;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Monitor {
-    private static final Logger LOGGER = Logger.getLogger("Monitor");
+
+    public static Set<String> called;
+
+    static {
+        called = new HashSet<>();
+    }
 
     public Monitor(String methodQN) {
-        Calls.getTracer().write(methodQN.concat("\n"));
+        if (!called.contains(methodQN)) {
+            Calls.getTracer().write(methodQN.concat("\n"));
+            called.add(methodQN);
+        }
     }
 
     public void report(String methodQN) {
-        Calls.getTracer().write(";".concat(methodQN).concat("\n"));
-    }
+        if (!called.contains(";".concat(methodQN))) {
+            Calls.getTracer().write(";".concat(methodQN).concat("\n"));
+            called.add(";".concat(methodQN));
+        }
 
+    }
 }
 

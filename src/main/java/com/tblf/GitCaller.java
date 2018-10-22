@@ -87,7 +87,7 @@ public class GitCaller {
             newTree = new RevWalk(repository).parseCommit(future).getTree();
             //diffFormatter = new DiffFormatter(new LogOutputStream(LOGGER, Level.FINE));
             diffFormatter = new DiffFormatter(System.out);
-            diffFormatter.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
+            diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
             diffFormatter.setRepository(repository);
             diffFormatter.setDetectRenames(true);
             diffFormatter.setContext(1);
