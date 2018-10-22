@@ -1,19 +1,33 @@
-//1- check that it's not a test using @Test
-//2- If it's not a test: verify that there's no @Override
-//3- if Override: get impacts through inheritance
-//4- else no impacts can be computed
+var methods = MethodDeclaration.all.select(m | m.name == methodDeclaration);
+var currentClass = ClassDeclaration.all.select(c | c.name == classDeclaration).first();
+
+var candidates = currentClass.getAllParentsFromClass().collect( c | c.bodyDeclarations.select(m | m.isTypeOf(MethodDeclaration) and m.name == methodDeclaration)).flatten();
+
+var measurementToModifiedMethod = Measurement.all.select(m | m.measurand.isDefined() and m.measurand == candidates.first());
+
+return measurementToModifiedMethod.collect(m | m.getMethodDeclarationImpacted().qualifiedName());
 
 
-operation getMethodDeclarationImpacted(m : Measurement) : MethodDeclaration {
-    var rs = m.inbound;
-    var method;
-
+@cached
+operation Measurement getMethodDeclarationImpacted() : MethodDeclaration {
+    var rs = self.inbound;
     if (rs.isDefined() and rs.from.isDefined() and not rs.from.isEmpty() and rs.from.at(0).isKindOf(Measurement)) {
-        method = getMethodDeclarationImpacted(rs.from.at(0));
+        return rs.from.at(0).getMethodDeclarationImpacted();
     } else {
-        method =  m.measurand;
+        return self.measurand;
     }
+}
 
-    method.annotations.println("annotations: ");
-    return method;
+@cached
+operation ClassDeclaration getAllParentsFromClass() : Sequence {
+    if (self.superClass.isDefined() and self.superClass.type.isTypeOf(ClassDeclaration)) {
+        return Sequence{self, self.superClass.type.getAllParentsFromClass()}.flatten();
+    } else {
+        return Sequence{self};
+    }
+}
+
+@cached
+operation MethodDeclaration qualifiedName() : String {
+    return self.eContainer.package.name +"."+self.eContainer.name+"$"+self.name;
 }

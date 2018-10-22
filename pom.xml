@@ -32,9 +32,9 @@
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <artifactId>emf-smm</artifactId>
-            <groupId>org.atlanmod.zoo</groupId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>org.omg.smm</groupId>
+            <artifactId>org.omg.smm</artifactId>
+            <version>1.1.1</version>
         </dependency>
     </dependencies>
 

@@ -1,5 +1,6 @@
 package com.tblf;
 
+import com.tblf.utils.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
 import org.junit.Assert;
@@ -15,6 +16,7 @@ public class SafetyRTSTest {
 
     @Before
     public void setUp() throws IOException {
+        FileUtils.unzip(new File("src/test/resources/TestSafety.zip"));
         file = new File("src/test/resources/TestSafety");
     }
 
