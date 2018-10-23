@@ -1,5 +1,6 @@
 package com.tblf;
 
+import com.tblf.compare.GitCaller;
 import com.tblf.utils.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
@@ -33,5 +34,6 @@ public class SafetyRTSTest {
 
     @After
     public void tearDown() throws IOException {
+        org.apache.commons.io.FileUtils.deleteDirectory(file);
     }
 }

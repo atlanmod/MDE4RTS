@@ -1,4 +1,4 @@
-package com.tblf;
+package com.tblf.parsingbehaviors;
 
 import com.tblf.parsing.parsingBehaviors.ParsingBehavior;
 import com.tblf.utils.ModelUtils;

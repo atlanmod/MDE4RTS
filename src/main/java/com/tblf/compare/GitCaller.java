@@ -1,4 +1,4 @@
-package com.tblf;
+package com.tblf.compare;
 
 
 import org.eclipse.jgit.api.Git;

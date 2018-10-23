@@ -1,11 +1,13 @@
 package com.tblf;
 
 import com.tblf.business.AnalysisLauncher;
+import com.tblf.compare.GitCaller;
 import com.tblf.instrumentation.InstrumentationType;
 import com.tblf.junitrunner.MavenRunner;
 import com.tblf.parsing.TraceType;
+import com.tblf.parsingbehaviors.MethodGrainedImpactAnalysisBehavior;
+import com.tblf.processors.CallGraphProcessor;
 import com.tblf.utils.ModelUtils;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.*;
@@ -14,10 +16,8 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,9 +35,9 @@ public class App {
 
         long timeBefore = System.currentTimeMillis();
         if (args.length == 2) {
-            buildImpactAnalysisModelWithSpecificCommitID(file, args[1]);
+            new App().buildImpactAnalysisModelWithSpecificCommitID(file, args[1]);
         } else {
-            buildImpactAnalysisModel(file);
+            new App().buildImpactAnalysisModel(file);
         }
         System.out.print(System.currentTimeMillis() - timeBefore);
         System.out.println("ms to build the model");
@@ -55,7 +55,7 @@ public class App {
      * @param commitId a CommitID as a {@link String}
      * @param file     a {@link File}
      */
-    public static void buildImpactAnalysisModelWithSpecificCommitID(File file, String commitId) {
+    public void buildImpactAnalysisModelWithSpecificCommitID(File file, String commitId) {
         String tmpBranchName = String.valueOf(System.currentTimeMillis());
         RevCommit revCommit = null;
         Git git = null;
@@ -85,7 +85,7 @@ public class App {
 
     }
 
-    public static void buildImpactAnalysisModel(File file) {
+    public void buildImpactAnalysisModel(File file) {
         System.out.println("Discovering "+file.getAbsolutePath());
         new Discoverer(file).run();
 

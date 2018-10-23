@@ -1,9 +1,10 @@
-package com.tblf;
+package com.tblf.compare;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.tblf.parsing.indexer.HawkQuery;
+import com.tblf.parsingbehaviors.EOLQueryBuilder;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;

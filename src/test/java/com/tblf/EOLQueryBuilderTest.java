@@ -3,6 +3,7 @@ package com.tblf;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.tblf.parsingbehaviors.EOLQueryBuilder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

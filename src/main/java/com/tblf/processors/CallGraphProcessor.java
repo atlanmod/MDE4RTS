@@ -1,4 +1,4 @@
-package com.tblf;
+package com.tblf.processors;
 
 import org.objectweb.asm.*;
 import org.objectweb.asm.commons.AdviceAdapter;

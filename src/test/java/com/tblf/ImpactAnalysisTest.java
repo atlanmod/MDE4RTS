@@ -19,12 +19,12 @@ public class ImpactAnalysisTest {
 
     @Test
     public void test() {
-        App.main(new String[]{project.getAbsolutePath()});
+        new App().buildImpactAnalysisModel(project);
     }
 
 
     @After
-    public void tearDown() {
-
+    public void tearDown() throws IOException {
+        org.apache.commons.io.FileUtils.deleteDirectory(project);
     }
 }
