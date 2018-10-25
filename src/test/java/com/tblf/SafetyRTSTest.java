@@ -22,9 +22,10 @@ public class SafetyRTSTest {
     }
 
     @Test
-    public void checkAnalyze() throws IOException, GitAPIException {
-        Collection<String> stringCollection = new GitCaller(file).compareCommits("master~1", "master");
+    public void checkAnalyze() {
+        Collection<String> stringCollection = new GitCaller(file).diffsSinceLastCommit();
 
+        stringCollection.forEach(System.out::println);
         Assert.assertTrue(stringCollection.contains("root.TestApp$testAdded"));
         Assert.assertTrue(stringCollection.contains("root.TestApp$testFalse"));
         Assert.assertTrue(stringCollection.contains("root.TestApp$testInheritance"));
