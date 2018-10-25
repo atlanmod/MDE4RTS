@@ -46,13 +46,13 @@ public class App {
         CommandLine commandLine = commandLineParser.parse(options, args);
 
         if (args.length == 0)
-            new HelpFormatter().printHelp("./mde4rts.jar", options);
+            new HelpFormatter().printHelp("java -jar mde4rts.jar ", options);
 
         if (commandLine.hasOption("help"))
-            new HelpFormatter().printHelp("./mde4rts.jar", options);
+            new HelpFormatter().printHelp("java -jar mde4rts.jar ", options);
 
         File file = null;
-        if (!commandLine.hasOption("project") && !commandLine.hasOption("help")) {
+        if (!commandLine.hasOption("project") && !commandLine.hasOption("help") && ! (args.length == 0)) {
             System.out.println("No project specified ! -help for more information");
         } else if (commandLine.hasOption("project")) {
             file = new File(commandLine.getOptionValue("project"));

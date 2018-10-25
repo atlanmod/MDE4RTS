@@ -43,18 +43,18 @@ public class CallGraphProcessor extends ClassVisitor {
             protected void onMethodEnter() {
                 super.onMethodEnter();
                 if (isTest) {
-                    mv.visitTypeInsn(Opcodes.NEW, "com/tblf/TestMonitor");
+                    mv.visitTypeInsn(Opcodes.NEW, "com/tblf/processors/TestMonitor");
                     mv.visitInsn(Opcodes.DUP);
                     mv.visitLdcInsn(className + "$" + name);
-                    mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "com/tblf/TestMonitor", "<init>", "(Ljava/lang/String;)V", false);
+                    mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "com/tblf/processors/TestMonitor", "<init>", "(Ljava/lang/String;)V", false);
 
                     value = newLocal(Type.getType(TestMonitor.class));
                     mv.visitVarInsn(Opcodes.ASTORE, value);
                 } else {
-                    mv.visitTypeInsn(Opcodes.NEW, "com/tblf/Monitor");
+                    mv.visitTypeInsn(Opcodes.NEW, "com/tblf/processors/Monitor");
                     mv.visitInsn(Opcodes.DUP);
                     mv.visitLdcInsn(className + "$" + name);
-                    mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "com/tblf/Monitor", "<init>", "(Ljava/lang/String;)V", false);
+                    mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "com/tblf/processors/Monitor", "<init>", "(Ljava/lang/String;)V", false);
 
                     value = newLocal(Type.getType(Monitor.class));
                     mv.visitVarInsn(Opcodes.ASTORE, value);
@@ -66,11 +66,11 @@ public class CallGraphProcessor extends ClassVisitor {
                 if (isTest) {
                     mv.visitVarInsn(Opcodes.ALOAD, value);
                     mv.visitLdcInsn(className + "$" + name);
-                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "com/tblf/TestMonitor", "report", "(Ljava/lang/String;)V", false);
+                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "com/tblf/processors/TestMonitor", "report", "(Ljava/lang/String;)V", false);
                 } else {
                     mv.visitVarInsn(Opcodes.ALOAD, value);
                     mv.visitLdcInsn(className + "$" + name);
-                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "com/tblf/Monitor", "report", "(Ljava/lang/String;)V", false);
+                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "com/tblf/processors/Monitor", "report", "(Ljava/lang/String;)V", false);
                 }
 
                 super.onMethodExit(opcode);
