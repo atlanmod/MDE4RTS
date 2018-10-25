@@ -6,10 +6,14 @@ import org.eclipse.jgit.diff.DiffAlgorithm;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RawTextComparator;
+import org.eclipse.jgit.dircache.DirCacheIterator;
+import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.AbstractTreeIterator;
+import org.eclipse.jgit.treewalk.FileTreeIterator;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,10 +32,9 @@ public class GitCaller {
 
     protected Repository repository;
 
-    protected RevTree oldTree;
-    protected RevTree newTree;
+    protected AnyObjectId oldTree;
+    protected AnyObjectId newTree;
 
-    protected DiffFormatter diffFormatter;
     protected File pomFolder;
     protected File gitFolder;
 
@@ -73,10 +76,8 @@ public class GitCaller {
     public Collection<String> compareCommits(String currentCommitID, String nextCommitID) {
 
         LOGGER.info("Comparing commits "+currentCommitID+" and "+nextCommitID);
-
         try {
             ObjectId current = repository.resolve(currentCommitID);
-
             ObjectId future = repository.resolve(nextCommitID);
 
             if (current == null || future == null) {
@@ -85,19 +86,41 @@ public class GitCaller {
 
             oldTree = new RevWalk(repository).parseCommit(current).getTree();
             newTree = new RevWalk(repository).parseCommit(future).getTree();
-            //diffFormatter = new DiffFormatter(new LogOutputStream(LOGGER, Level.FINE));
-            diffFormatter = new DiffFormatter(System.out);
-            diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
-            diffFormatter.setRepository(repository);
-            diffFormatter.setDetectRenames(true);
-            diffFormatter.setContext(1);
-            diffFormatter.setDiffAlgorithm(DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.HISTOGRAM));
-            List<DiffEntry> diffEntryList = diffFormatter.scan(current, future);
 
-            return new RegressionTestSelection(gitFolder, pomFolder, diffFormatter, current, future).getAllMethodsImpacted();
+            DiffFormatter diffFormatter = createDiffFormater();
+            List<DiffEntry> diffEntries = diffFormatter.scan(oldTree, newTree);
+            return new RegressionTestSelection(gitFolder, pomFolder, diffFormatter, diffEntries, current).getAllMethodsImpacted();
+
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Couldn't build the revision tree", e);
         }
         return Collections.EMPTY_LIST;
+    }
+
+    public Collection<String> diffsSinceLastCommit() {
+        Collection<String> impactedMethods = null;
+        try {
+            AbstractTreeIterator newTree = new FileTreeIterator(repository); //Current repo
+            AbstractTreeIterator oldTree = new DirCacheIterator(repository.readDirCache()); //old repo
+            DiffFormatter diffFormatter = createDiffFormater();
+            List<DiffEntry> diffEntries = diffFormatter.scan(oldTree, newTree);
+            impactedMethods = new RegressionTestSelection(gitFolder, pomFolder, diffFormatter, diffEntries, repository.resolve("master")).getAllMethodsImpacted();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return impactedMethods;
+    }
+
+    private DiffFormatter createDiffFormater() {
+        DiffFormatter diffFormatter = new DiffFormatter(System.out);
+        diffFormatter.setDiffComparator(RawTextComparator.DEFAULT);
+        diffFormatter.setRepository(repository);
+        diffFormatter.setDetectRenames(true);
+        diffFormatter.setContext(1);
+        diffFormatter.setDiffAlgorithm(DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.HISTOGRAM));
+
+        return diffFormatter;
     }
 }

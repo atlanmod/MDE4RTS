@@ -38,9 +38,9 @@ public class RegressionTestSelection {
     private EOLQueryBuilder eolQueryBuilder;
 
     private Collection<String> testImpacted;
+    private Collection<DiffEntry> diffEntryCollection;
 
     private ObjectId oldId;
-    private ObjectId newId;
 
     private static final Logger LOGGER = Logger.getLogger(RegressionTestSelection.class.getName());
 
@@ -51,14 +51,13 @@ public class RegressionTestSelection {
      * @param pomFolder the {@link File} directory that contains the pom.xml file
      * @param diffFormat a {@link DiffFormatter}
      * @param oldId the {@link ObjectId} of the old revision
-     * @param newId the {@link ObjectId} of the new revision
      */
-    public RegressionTestSelection(File folder, File pomFolder, DiffFormatter diffFormat, ObjectId oldId, ObjectId newId) {
+    public RegressionTestSelection(File folder, File pomFolder, DiffFormatter diffFormat,  List<DiffEntry> diffEntries, ObjectId oldId) {
 
         this.gitFolder = folder;
         this.diffFormatter = diffFormat;
         this.oldId = oldId;
-        this.newId = newId;
+        this.diffEntryCollection = diffEntries;
 
         this.hawkQuery = new HawkQuery(pomFolder);
 
@@ -70,6 +69,7 @@ public class RegressionTestSelection {
 
         this.newMethods = new ArrayList<>();
         this.updatedMethods = new ArrayList<>();
+
         this.deletedMethods = new ArrayList<>();
     }
 
@@ -80,14 +80,6 @@ public class RegressionTestSelection {
      */
     @SuppressWarnings("unchecked")
     public Collection<String> getAllMethodsImpacted() {
-
-        Collection<DiffEntry> diffEntryCollection;
-        try {
-            diffEntryCollection = diffFormatter.scan(oldId, newId);
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Couldn't run the diff", e);
-            diffEntryCollection = new ArrayList<>();
-        }
 
         diffEntryCollection.forEach(diffEntry -> {
             try {
@@ -131,7 +123,7 @@ public class RegressionTestSelection {
         try {
             hawkQuery.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "Could not close the indexer", e);
         }
         return testImpacted;
     }
