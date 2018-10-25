@@ -45,8 +45,10 @@ public class EOLQueryBuilder {
      * @return a String such as: "var methodDeclaration = methodDeclarationName; var classDeclaration = methodDeclarationClassName;"
      */
     public String createQualifiedNameEolDeclaration(MethodDeclaration methodDeclaration) {
-        String eolNameDeclaration = "var methodDeclaration = \"" + methodDeclaration.getNameAsString() + "\";\n";
-        return eolNameDeclaration.concat("var classDeclaration = \"" + ((ClassOrInterfaceDeclaration) methodDeclaration.getParentNode().orElse(new ClassOrInterfaceDeclaration())).getNameAsString() + "\";\n");
+        String methodQualifiedName = "var methodQualifiedName = \""+getQualifiedName(methodDeclaration)+"\";\n";
+        String eolMethodNameDeclaration = "var methodDeclaration = \"" + methodDeclaration.getNameAsString() + "\";\n";
+        String eolClassNameDeclaration = "var classDeclaration = \"" + ((ClassOrInterfaceDeclaration) methodDeclaration.getParentNode().orElse(new ClassOrInterfaceDeclaration())).getNameAsString() + "\";\n";
+        return methodQualifiedName.concat(eolMethodNameDeclaration).concat(eolClassNameDeclaration);
     }
 
     /**

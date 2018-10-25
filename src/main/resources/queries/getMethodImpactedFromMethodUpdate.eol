@@ -1,8 +1,6 @@
-var method = MethodDeclaration.all.select(m | m.name == methodDeclaration and m.eContainer.isDefined() and m.eContainer.name == classDeclaration).first();
+var measurementToModifiedMethod = Measurement.all.select(m | m.measurand.isDefined() and m.name=methodQualifiedName);
 
-var measurementToModifiedMethod = Measurement.all.select(m | m.measurand.isDefined() and m.measurand == method);
-
-return measurementToModifiedMethod.collect(m | m.getMethodDeclarationImpacted().qualifiedName());
+return MeasurementRelationship.all.select(rs | rs.to.name == methodQualifiedName).collect(rs | rs.from.name);
 
 @cached
 operation Measurement getMethodDeclarationImpacted() : MethodDeclaration {

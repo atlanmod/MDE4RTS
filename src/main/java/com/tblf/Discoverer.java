@@ -3,6 +3,8 @@ package com.tblf;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Discoverer implements Runnable {
 
@@ -22,12 +24,14 @@ public class Discoverer implements Runnable {
                 throw new FileNotFoundException("could not run the discovery on "+project.getAbsolutePath());
             }
 
-            new ProcessBuilder()
+            Process process =new ProcessBuilder()
                     .command("sh", discoverylauncher.getAbsolutePath(), project.getAbsolutePath())
-                    .redirectOutput(File.createTempFile("modisco", ".log"))
+                    .inheritIO()
                     .start();
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            process.waitFor();
+        } catch (IOException | InterruptedException e) {
+            Logger.getLogger("Discoverer").log(Level.WARNING, "Could not discover the source code", e);
         }
     }
 }
