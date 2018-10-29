@@ -2,7 +2,7 @@
 
 #  Installation
 
-MDE4RTS will download main dependencies using maven. However several dependencies have to be installed by hand before-hand, including [Mondo-hawk](https://github.com/mondo-project/mondo-hawk), and [MoDisco](https://www.eclipse.org/MoDisco/).
+MDE4RTS will download main dependencies using maven. However several dependencies have to be installed by hand before-hand, including [Mondo-hawk](https://github.com/mondo-project/mondo-hawk), the [DynamicAnalyser](https://github.com/atlanmod/DynamicAnalyser), and [MoDisco](https://www.eclipse.org/MoDisco/).
 
 A simple headless Eclipse plugin is available in the jar located in src/main/resources. It takes as a parameter the absolute URI of the project under analysis. 
 
