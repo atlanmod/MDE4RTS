@@ -101,9 +101,11 @@ public class MethodGrainedImpactAnalysisBehavior extends ParsingBehavior {
             // Consider internal classes
             className = trace.substring(0, trace.lastIndexOf("$"));
             methodName = splittedTrace[splittedTrace.length-1];
-        } else {
+        } else if (splittedTrace.length == 2) {
             className = trace.split("\\$")[0];
             methodName = trace.split("\\$")[1];
+        } else {
+            return;
         }
 
         if ("<init>".equals(methodName)) methodName = className;

@@ -1,6 +1,5 @@
 package com.tblf.parsingbehaviors;
 
-import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import org.apache.commons.io.FileUtils;
@@ -45,29 +44,9 @@ public class EOLQueryBuilder {
      * @return a String such as: "var methodDeclaration = methodDeclarationName; var classDeclaration = methodDeclarationClassName;"
      */
     public String createQualifiedNameEolDeclaration(MethodDeclaration methodDeclaration) {
-        String methodQualifiedName = "var methodQualifiedName = \""+getQualifiedName(methodDeclaration)+"\";\n";
+        String methodQualifiedName = "var methodQualifiedName = \""+ParsingUtils.getQualifiedName(methodDeclaration)+"\";\n";
         String eolMethodNameDeclaration = "var methodDeclaration = \"" + methodDeclaration.getNameAsString() + "\";\n";
         String eolClassNameDeclaration = "var classDeclaration = \"" + ((ClassOrInterfaceDeclaration) methodDeclaration.getParentNode().orElse(new ClassOrInterfaceDeclaration())).getNameAsString() + "\";\n";
         return methodQualifiedName.concat(eolMethodNameDeclaration).concat(eolClassNameDeclaration);
-    }
-
-    /**
-     * Iterates over the parents nodes of a class to get the qualified name
-     *
-     * @param methodDeclaration a {@link MethodDeclaration}
-     * @return a Qualified name as a {@link String}
-     */
-    public String getQualifiedName(MethodDeclaration methodDeclaration) {
-        String QN = "";
-        if (methodDeclaration.getParentNode().isPresent() && methodDeclaration.getParentNode().get().getClass().equals(ClassOrInterfaceDeclaration.class)) {
-            ClassOrInterfaceDeclaration classOrInterfaceDeclaration = (ClassOrInterfaceDeclaration) methodDeclaration.getParentNode().get();
-            CompilationUnit compilationUnit = classOrInterfaceDeclaration.getAncestorOfType(CompilationUnit.class).orElse(new CompilationUnit());
-            if (compilationUnit.getPackageDeclaration().isPresent()) {
-                QN = QN.concat(compilationUnit.getPackageDeclaration().get().getName() + ".");
-            }
-            QN = QN + classOrInterfaceDeclaration.getName() + "$";
-        }
-
-        return QN + methodDeclaration.getNameAsString();
     }
 }
