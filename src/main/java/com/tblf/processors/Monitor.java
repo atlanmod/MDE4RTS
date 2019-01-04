@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class Monitor {
 
-    public static Set<String> called;
+    static Set<String> called;
 
     static {
         called = new HashSet<>();
@@ -15,9 +15,14 @@ public class Monitor {
 
     public Monitor(String methodQN) {
         if (!called.contains(methodQN)) {
+            System.out.println("Called");
             Calls.getTracer().write(methodQN.concat("\n"));
             called.add(methodQN);
         }
+    }
+
+    public Monitor() {
+
     }
 
     public void report(String methodQN) {
