@@ -27,15 +27,15 @@ import java.util.logging.Logger;
  */
 public class GitCaller {
 
-    protected static final Logger LOGGER = Logger.getLogger("GitCaller");
+    private static final Logger LOGGER = Logger.getLogger("GitCaller");
 
-    protected Repository repository;
+    private Repository repository;
 
-    protected AnyObjectId oldTree;
-    protected AnyObjectId newTree;
+    private AnyObjectId oldTree;
+    private AnyObjectId newTree;
 
-    protected File pomFolder;
-    protected File gitFolder;
+    private File pomFolder;
+    private File gitFolder;
 
     /**
      * Constructor initializing the {@link Git}
