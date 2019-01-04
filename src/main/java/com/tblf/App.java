@@ -5,21 +5,15 @@ import com.tblf.compare.GitCaller;
 import com.tblf.instrumentation.InstrumentationType;
 import com.tblf.junitrunner.MavenRunner;
 import com.tblf.parsing.TraceType;
-import com.tblf.parsingbehaviors.MethodGrainedImpactAnalysisBehavior;
-import com.tblf.processors.CallGraphProcessor;
+import com.tblf.parsing.parsingBehaviors.EmptyParsingBehavior;
+import com.tblf.processors.TopicCallGraphProcessor;
 import com.tblf.utils.ModelUtils;
 import org.apache.commons.cli.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.*;
-import org.eclipse.jgit.merge.MergeStrategy;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -40,7 +34,8 @@ public class App {
         Options options = new Options();
 
         options.addOption("help", false, "print this message");
-        options.addOption("model", false, "build the impact analysis model without performing a RTS");
+        options.addOption("iamodel", false, "build the impact analysis model without performing a RTS");
+        options.addOption("model", false, "build the static source code model");
         options.addOption(Option.builder("rts").optionalArg(true).argName("commitID").hasArg(true).desc("perform a regression test selection between the current revision and the specified commit. Specify no commit if you want to apply RTS between master and HEAD").build());
         options.addOption(Option.builder("project").hasArg(true).optionalArg(false).argName("projectURI").desc("project on which the operations will be performed").build());
         CommandLine commandLine = commandLineParser.parse(options, args);
@@ -58,9 +53,11 @@ public class App {
             file = new File(commandLine.getOptionValue("project"));
         }
 
-        if (commandLine.hasOption("model"))    //Impact Analysis Model
+        if (commandLine.hasOption("model")) {
+            new App().buildStaticModel(file);
+        } else if (commandLine.hasOption("iamodel")) {    //Impact Analysis Model
             new App().buildImpactAnalysisModel(file);
-
+        }
 
         if (commandLine.hasOption("rts")) {
             String commitID = commandLine.getOptionValue("rts");
@@ -73,7 +70,7 @@ public class App {
             } else {
                 //RTS commit, HEAD
                 System.out.println("Performing a Regression Test Selection between " + commitID + " and HEAD");
-                testImpacted = new GitCaller(file).compareCommits(commitID, "HEAD");
+                testImpacted = new GitCaller(file).traceBasedCommitComparison(commitID, "HEAD");
             }
 
             System.out.println("Test(s) impacted: ");
@@ -88,8 +85,7 @@ public class App {
      * @param file the {@link File} location of the project under analysis
      */
     public void buildImpactAnalysisModel(File file) {
-        System.out.println("Discovering " + file.getAbsolutePath());
-        new Discoverer(file).run();
+        buildStaticModel(file);
 
         new MavenRunner(new File(file, "pom.xml")).compilePom();
 
@@ -97,20 +93,15 @@ public class App {
 
         AnalysisLauncher analysisLauncher = new AnalysisLauncher(file);
         analysisLauncher.setInstrumentationType(InstrumentationType.BYTECODE);
-        analysisLauncher.setTraceType(TraceType.FILE);
+        analysisLauncher.setTraceType(TraceType.QUEUE);
         analysisLauncher.registerDependencies(Collections.singletonList(new File("pom.xml")));
-        analysisLauncher.registerProcessor(new CallGraphProcessor());
-        analysisLauncher.registerBehavior(new MethodGrainedImpactAnalysisBehavior(resourceSet));
-        analysisLauncher.applyAfter(file1 -> {
-            try {
-                ((MethodGrainedImpactAnalysisBehavior) analysisLauncher.getBehavior()).close();
-                long timeBefore = System.currentTimeMillis();
-                resourceSet.getResources().get(resourceSet.getResources().size() - 1).save(Collections.EMPTY_MAP);
-                System.out.println("saving the model lasted: " + (System.currentTimeMillis() - timeBefore) + " ms");
-            } catch (IOException e) {
-                LOGGER.log(Level.WARNING, "Could not save the impact analysis model", e);
-            }
-        });
+        analysisLauncher.registerProcessor(new TopicCallGraphProcessor());
+        analysisLauncher.registerBehavior(new EmptyParsingBehavior());
         analysisLauncher.run();
+    }
+
+    public void buildStaticModel(File file) {
+        System.out.println("Discovering " + file.getAbsolutePath());
+        new Discoverer(file).run();
     }
 }

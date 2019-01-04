@@ -10,15 +10,14 @@ import org.eclipse.jgit.dircache.DirCacheIterator;
 import org.eclipse.jgit.lib.AnyObjectId;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.FileTreeIterator;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,7 +72,7 @@ public class GitCaller {
      *  @param currentCommitID the first commit ID
      * @param nextCommitID    the next commit ID
      */
-    public Collection<String> compareCommits(String currentCommitID, String nextCommitID) {
+    public Collection<String> modelBasedCommitComparison(String currentCommitID, String nextCommitID) {
 
         LOGGER.info("Comparing commits "+currentCommitID+" and "+nextCommitID);
         try {
@@ -89,13 +88,44 @@ public class GitCaller {
 
             DiffFormatter diffFormatter = createDiffFormater();
             List<DiffEntry> diffEntries = diffFormatter.scan(oldTree, newTree);
-            return new RegressionTestSelection(gitFolder, pomFolder, diffFormatter, diffEntries, current).getAllMethodsImpacted();
+            return new ModelBasedRegressionTestSelection(gitFolder, pomFolder, diffFormatter, diffEntries, current).getAllMethodsImpacted();
 
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Couldn't build the revision tree", e);
         }
-        return Collections.EMPTY_LIST;
+        return new ArrayList<>();
     }
+
+    /**
+     * Compare two given commit ID
+     *  @param currentCommitID the first commit ID
+     * @param nextCommitID    the next commit ID
+     */
+    public Collection<String> traceBasedCommitComparison(String currentCommitID, String nextCommitID) {
+
+        LOGGER.info("Comparing commits "+currentCommitID+" and "+nextCommitID);
+        try {
+            ObjectId current = repository.resolve(currentCommitID);
+            ObjectId future = repository.resolve(nextCommitID);
+
+            if (current == null || future == null) {
+                throw new IOException("Cannot resolve the commits: " + current + " -> " + future);
+            }
+
+            oldTree = new RevWalk(repository).parseCommit(current).getTree();
+            newTree = new RevWalk(repository).parseCommit(future).getTree();
+
+            DiffFormatter diffFormatter = createDiffFormater();
+            List<DiffEntry> diffEntries = diffFormatter.scan(oldTree, newTree);
+
+            return new TraceBasedRegressionTestSelection(gitFolder, pomFolder, diffFormatter, diffEntries, current).getAllMethodsImpacted();
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Couldn't build the revision tree", e);
+        }
+
+        return new ArrayList<>();
+    }
+
 
     public Collection<String> diffsSinceLastCommit() {
         Collection<String> impactedMethods = null;
@@ -104,7 +134,7 @@ public class GitCaller {
             AbstractTreeIterator oldTree = new DirCacheIterator(repository.readDirCache()); //old repo
             DiffFormatter diffFormatter = createDiffFormater();
             List<DiffEntry> diffEntries = diffFormatter.scan(oldTree, newTree);
-            impactedMethods = new RegressionTestSelection(gitFolder, pomFolder, diffFormatter, diffEntries, repository.resolve("master")).getAllMethodsImpacted();
+            impactedMethods = new TraceBasedRegressionTestSelection(gitFolder, pomFolder, diffFormatter, diffEntries, repository.resolve("master")).getAllMethodsImpacted();
 
         } catch (IOException e) {
             e.printStackTrace();
