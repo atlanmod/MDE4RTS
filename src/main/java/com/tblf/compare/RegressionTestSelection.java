@@ -3,8 +3,7 @@ package com.tblf.compare;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.tblf.parsing.indexer.HawkQuery;
-import com.tblf.parsingbehaviors.EOLQueryBuilder;
+import com.tblf.parsingbehaviors.ParsingUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -23,26 +22,31 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class RegressionTestSelection {
+public abstract class RegressionTestSelection {
 
-    private Collection<MethodDeclaration> newMethods;
-    private Collection<MethodDeclaration> updatedMethods;
-    private Collection<MethodDeclaration> deletedMethods;
+    abstract Collection<String> getImpactsOfMethodUpdate(MethodDeclaration methodDeclaration);
 
-    private Map<File, CompilationUnit> filesJavaParsedNewRevision;
-    private Map<File, CompilationUnit> filesJavaParsedOldRevision;
+    abstract Collection<String> getImpactsOfMethodDeletion(MethodDeclaration methodDeclaration);
 
-    private HawkQuery hawkQuery;
-    private DiffFormatter diffFormatter;
-    private File gitFolder;
-    private EOLQueryBuilder eolQueryBuilder;
+    abstract Collection<String> getImpactsOfMethodAddition(MethodDeclaration methodDeclaration);
 
-    private Collection<String> testImpacted;
-    private Collection<DiffEntry> diffEntryCollection;
+    protected Collection<MethodDeclaration> newMethods;
+    protected Collection<MethodDeclaration> updatedMethods;
+    protected Collection<MethodDeclaration> deletedMethods;
+
+    protected Map<File, CompilationUnit> filesJavaParsedNewRevision;
+    protected Map<File, CompilationUnit> filesJavaParsedOldRevision;
+
+    protected DiffFormatter diffFormatter;
+    protected File gitFolder;
+
+
+    protected Collection<String> testImpacted;
+    protected Collection<DiffEntry> diffEntryCollection;
 
     private ObjectId oldId;
 
-    private static final Logger LOGGER = Logger.getLogger(RegressionTestSelection.class.getName());
+    protected static final Logger LOGGER = Logger.getLogger(RegressionTestSelection.class.getName());
 
 
     /**
@@ -52,17 +56,14 @@ public class RegressionTestSelection {
      * @param diffFormat a {@link DiffFormatter}
      * @param oldId the {@link ObjectId} of the old revision
      */
-    public RegressionTestSelection(File folder, File pomFolder, DiffFormatter diffFormat,  List<DiffEntry> diffEntries, ObjectId oldId) {
+    public RegressionTestSelection(File folder, File pomFolder, DiffFormatter diffFormat, List<DiffEntry> diffEntries, ObjectId oldId) {
 
         this.gitFolder = folder;
         this.diffFormatter = diffFormat;
         this.oldId = oldId;
         this.diffEntryCollection = diffEntries;
 
-        this.hawkQuery = new HawkQuery(pomFolder);
-
         this.testImpacted = new HashSet<>();
-        this.eolQueryBuilder = new EOLQueryBuilder();
 
         this.filesJavaParsedNewRevision = new HashMap<>();
         this.filesJavaParsedOldRevision = new HashMap<>();
@@ -78,7 +79,6 @@ public class RegressionTestSelection {
      *
      * @return a {@link Collection} of method qualified names as {@link String}
      */
-    @SuppressWarnings("unchecked")
     public Collection<String> getAllMethodsImpacted() {
 
         diffEntryCollection.forEach(diffEntry -> {
@@ -98,33 +98,12 @@ public class RegressionTestSelection {
             }
         });
 
-        deletedMethods.forEach(methodDeclaration -> {
-            LOGGER.log(Level.INFO, eolQueryBuilder.getQualifiedName(methodDeclaration) + " deletion impacts computed");
-            testImpacted.addAll((Collection<? extends String>) hawkQuery.queryWithInputEOLQuery(eolQueryBuilder.createGetImpactOfSingleMethodUpdate(methodDeclaration)));
-        });
+        deletedMethods.forEach(methodDeclaration -> testImpacted.addAll(getImpactsOfMethodDeletion(methodDeclaration)));
 
-        updatedMethods.forEach(methodDeclaration -> {
-            LOGGER.log(Level.INFO, eolQueryBuilder.getQualifiedName(methodDeclaration) + " update impacts computed");
-            testImpacted.addAll((Collection<? extends String>) hawkQuery.queryWithInputEOLQuery(eolQueryBuilder.createGetImpactOfSingleMethodUpdate(methodDeclaration)));
-        });
+        updatedMethods.forEach(methodDeclaration -> testImpacted.addAll(getImpactsOfMethodUpdate(methodDeclaration)));
 
-        newMethods.forEach(methodDeclaration -> {
-            LOGGER.log(Level.INFO, eolQueryBuilder.getQualifiedName(methodDeclaration) + " addition impacts computed");
-            methodDeclaration.getAnnotations().forEach(annotationExpr -> {
-                if ("Test".equals(annotationExpr.getNameAsString())) {
-                    testImpacted.add(eolQueryBuilder.getQualifiedName(methodDeclaration));
-                }
-                if ("Override".equals(annotationExpr.getNameAsString())) {
-                    testImpacted.addAll((Collection<? extends String>) hawkQuery.queryWithInputEOLQuery(eolQueryBuilder.createGetImpactOfSingleMethodAddition(methodDeclaration)));
-                }
-            });
-        });
+        newMethods.forEach(methodDeclaration -> testImpacted.addAll(getImpactsOfMethodAddition(methodDeclaration)));
 
-        try {
-            hawkQuery.close();
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Could not close the indexer", e);
-        }
         return testImpacted;
     }
 
@@ -135,8 +114,8 @@ public class RegressionTestSelection {
      * @throws IOException if the {@link DiffEntry} cannot be analyzed
      */
     private void identifyModificationType(DiffEntry diffEntry) throws IOException {
-        Map<String, MethodDeclaration> newFileMethods = getOrParseFileNewRev(diffEntry).getChildNodesByType(MethodDeclaration.class).stream().collect(Collectors.toMap(o -> eolQueryBuilder.getQualifiedName(o), o -> o));
-        Map<String, MethodDeclaration> oldFileMethods = getOrParseFileOldRev(diffEntry).getChildNodesByType(MethodDeclaration.class).stream().collect(Collectors.toMap(o -> eolQueryBuilder.getQualifiedName(o), o -> o));
+        Map<String, MethodDeclaration> newFileMethods = getOrParseFileNewRev(diffEntry).getChildNodesByType(MethodDeclaration.class).stream().collect(Collectors.toMap(ParsingUtils::getQualifiedName, o -> o));
+        Map<String, MethodDeclaration> oldFileMethods = getOrParseFileOldRev(diffEntry).getChildNodesByType(MethodDeclaration.class).stream().collect(Collectors.toMap(ParsingUtils::getQualifiedName, o -> o));
 
         newFileMethods.forEach((s, newMethod) -> {
             MethodDeclaration oldMethod = oldFileMethods.get(s);
@@ -179,7 +158,7 @@ public class RegressionTestSelection {
                 .filter(methodDeclaration -> methodDeclaration.getAnnotations().stream()
                         .anyMatch(annotationExpr -> annotationExpr.getName().asString().equals("Test"))
                 )
-                .map(methodDeclaration -> eolQueryBuilder.getQualifiedName(methodDeclaration))
+                .map(ParsingUtils::getQualifiedName)
                 .collect(Collectors.toList());
     }
 
@@ -192,7 +171,7 @@ public class RegressionTestSelection {
     private Collection<? extends String> manageDeletedFile(DiffEntry diffEntry) {
         String fileContent = getOldFileContent(diffEntry);
         CompilationUnit compilationUnit = JavaParser.parse(fileContent);
-        return compilationUnit.getChildNodesByType(MethodDeclaration.class).stream().map(methodDeclaration -> eolQueryBuilder.getQualifiedName(methodDeclaration)).collect(Collectors.toList());
+        return compilationUnit.getChildNodesByType(MethodDeclaration.class).stream().map(ParsingUtils::getQualifiedName).collect(Collectors.toList());
     }
 
     /**
