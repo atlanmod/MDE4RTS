@@ -4,6 +4,7 @@ import com.tblf.compare.GitCaller;
 import com.tblf.utils.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
-public class RegressionTestSelectionTest {
+public class ModelBasedRegressionTestSelectionTest {
 
     @Before
     public void setUp() throws IOException {
@@ -28,8 +29,8 @@ public class RegressionTestSelectionTest {
         File archive= new File("src/test/resources/TestRTSAllUpdates.zip");
         FileUtils.unzip(archive);
 
-        Collection<String> testImpacted = new GitCaller(file, file).compareCommits("master~1", "master");
-        testImpacted.forEach(System.out::println);
+        Collection<String> testImpacted = new GitCaller(file, file).modelBasedCommitComparison("master~1", "master");
+        Assert.assertEquals(6, testImpacted.size());
     }
 
     @After

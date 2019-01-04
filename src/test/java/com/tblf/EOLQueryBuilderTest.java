@@ -4,6 +4,7 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.tblf.parsingbehaviors.EOLQueryBuilder;
+import com.tblf.parsingbehaviors.ParsingUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class EOLQueryBuilderTest {
         compilationUnit.getChildNodesByType(MethodDeclaration.class).forEach(methodDeclaration -> {
             atomicInteger.incrementAndGet();
             String methodName = methodDeclaration.getNameAsString();
-            Assert.assertEquals("root.App$"+methodName, eolQueryBuilder.getQualifiedName(methodDeclaration));
+            Assert.assertEquals("root.App$"+methodName, ParsingUtils.getQualifiedName(methodDeclaration));
         });
 
         Assert.assertEquals(2, atomicInteger.get());
