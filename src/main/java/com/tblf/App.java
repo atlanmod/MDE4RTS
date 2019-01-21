@@ -7,6 +7,7 @@ import com.tblf.junitrunner.MavenRunner;
 import com.tblf.parsing.TraceType;
 import com.tblf.parsing.parsingBehaviors.EmptyParsingBehavior;
 import com.tblf.processors.TopicCallGraphProcessor;
+import com.tblf.utils.MavenUtils;
 import com.tblf.utils.ModelUtils;
 import org.apache.commons.cli.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -73,8 +74,8 @@ public class App {
                 testImpacted = new GitCaller(file).traceBasedCommitComparison(commitID, "HEAD");
             }
 
-            System.out.println("Test(s) impacted: ");
-            testImpacted.forEach(System.out::println);
+            LOGGER.info("Test(s) impacted: ");
+            testImpacted.forEach(LOGGER::info);
         }
 
     }
@@ -89,12 +90,11 @@ public class App {
 
         new MavenRunner(new File(file, "pom.xml")).compilePom();
 
-        ResourceSet resourceSet = ModelUtils.buildResourceSet(file);
+        MavenUtils.addDependencyToPom(new File(file,"pom.xml"), "com.tblf", "MDE4RTS", "1.0-SNAPSHOT");
 
         AnalysisLauncher analysisLauncher = new AnalysisLauncher(file);
         analysisLauncher.setInstrumentationType(InstrumentationType.BYTECODE);
         analysisLauncher.setTraceType(TraceType.QUEUE);
-        analysisLauncher.registerDependencies(Collections.singletonList(new File("pom.xml")));
         analysisLauncher.registerProcessor(new TopicCallGraphProcessor());
         analysisLauncher.registerBehavior(new EmptyParsingBehavior());
         analysisLauncher.run();

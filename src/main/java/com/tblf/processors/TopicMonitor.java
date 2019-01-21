@@ -16,7 +16,6 @@ public class TopicMonitor {
     }
 
     public TopicMonitor(String methodQN) {
-        System.out.println(methodQN);
         if (!methodsCalled.contains(methodQN)) {
                 Calls.getTracer().write(methodQN, runningTest);
         }

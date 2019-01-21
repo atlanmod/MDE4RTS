@@ -3,10 +3,7 @@ package com.tblf;
 import com.tblf.compare.GitCaller;
 import com.tblf.utils.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +17,7 @@ public class ModelBasedRegressionTestSelectionTest {
         org.apache.commons.io.FileUtils.deleteDirectory(file);
     }
 
+    @Ignore
     @Test
     public void checkAnalyze() throws IOException, GitAPIException {
         File file = new File("src/test/resources/TestRTSAllUpdates");

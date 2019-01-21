@@ -9,7 +9,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import scala.Char;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -17,6 +16,11 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 public class CLITest {
 
@@ -56,13 +60,12 @@ public class CLITest {
             content = content.replace("Hello World", "Hello Warld");
             org.apache.commons.io.FileUtils.writeStringToFile(file, content, Charset.defaultCharset());
         }
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        PrintStream out = System.out;
-        System.setOut(new PrintStream(byteArrayOutputStream));
+
+        ArrayList<String> strings = new ArrayList<>();
+        Logger.getLogger(App.class.getName()).addHandler(new TestHandler(strings));
+
         App.main(new String[]{"-rts", "-project", project.getAbsolutePath()});
-        String[] strings = byteArrayOutputStream.toString().split("\n");
-        Assert.assertEquals("com.tblf.AppTest$shouldAnswerWithTrue", strings[strings.length-1]);
-        System.setOut(out);
+        Assert.assertEquals("com.tblf.AppTest$shouldAnswerWithTrue", strings.get(strings.size()-1));
     }
 
     @Test
@@ -81,19 +84,40 @@ public class CLITest {
         RevCommit revCommit = git.log().call().iterator().next();
         Git.open(project).commit().setAll(true).setMessage("committed").call();
 
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        PrintStream out = System.out;
-        System.setOut(new PrintStream(byteArrayOutputStream));
+        ArrayList<String> strings = new ArrayList<>();
+        Logger.getLogger(App.class.getName()).addHandler(new TestHandler(strings));
 
         App.main(new String[]{"-rts", revCommit.getName(), "-project", project.getAbsolutePath()});
 
-        String[] strings = byteArrayOutputStream.toString().split("\n");
-        Assert.assertEquals("com.tblf.AppTest$shouldAnswerWithTrue", strings[strings.length-1]);
-        System.setOut(out);
+        Assert.assertEquals("com.tblf.AppTest$shouldAnswerWithTrue", strings.get(strings.size()-1));
     }
 
     @After
     public void tearDown() throws IOException {
         org.apache.commons.io.FileUtils.deleteDirectory(project);
+    }
+
+    private class TestHandler extends Handler {
+
+        private ArrayList<String> results;
+
+        public TestHandler(ArrayList<String> results) {
+            this.results = results;
+        }
+
+        @Override
+        public void publish(LogRecord record) {
+            results.add(record.getMessage());
+        }
+
+        @Override
+        public void flush() {
+
+        }
+
+        @Override
+        public void close() throws SecurityException {
+
+        }
     }
 }
