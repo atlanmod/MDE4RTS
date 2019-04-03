@@ -4,8 +4,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.tblf</groupId>
   <artifactId>MDE4RTS</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <dependencies>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>Agent</module>
+    </modules>
+    <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -108,7 +112,7 @@
             <configuration>
               <archive>
                 <manifest>
-                  <mainClass>com.tblf.App</mainClass>
+                  <mainClass>com.tblf.Agent</mainClass>
                 </manifest>
               </archive>
               <descriptorRefs>
