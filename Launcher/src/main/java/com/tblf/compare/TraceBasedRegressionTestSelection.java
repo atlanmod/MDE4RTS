@@ -3,6 +3,7 @@ package com.tblf.compare;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.tblf.parsingbehaviors.ParsingUtils;
+import com.tblf.utils.Configuration;
 import net.openhft.chronicle.queue.ChronicleQueue;
 import net.openhft.chronicle.queue.ExcerptTailer;
 import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;

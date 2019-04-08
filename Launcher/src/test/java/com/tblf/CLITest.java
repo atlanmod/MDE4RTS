@@ -65,7 +65,7 @@ public class CLITest {
         Logger.getLogger(App.class.getName()).addHandler(new TestHandler(strings));
 
         App.main(new String[]{"-rts", "-project", project.getAbsolutePath()});
-        Assert.assertEquals("com.tblf.AppTest$shouldAnswerWithTrue", strings.get(strings.size()-1));
+        Assert.assertTrue(strings.contains("com.tblf.AppTest$shouldAnswerWithTrue"));
     }
 
     @Test
@@ -89,7 +89,7 @@ public class CLITest {
 
         App.main(new String[]{"-rts", revCommit.getName(), "-project", project.getAbsolutePath()});
 
-        Assert.assertEquals("com.tblf.AppTest$shouldAnswerWithTrue", strings.get(strings.size()-1));
+        Assert.assertTrue(strings.contains("com.tblf.AppTest$shouldAnswerWithTrue"));
     }
 
     @After

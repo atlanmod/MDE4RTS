@@ -1,12 +1,15 @@
 package com.tblf;
 
+import com.tblf.compare.TraceBasedRegressionTestSelection;
 import com.tblf.utils.FileUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 public class ImpactAnalysisTest {
     private File project;
@@ -18,11 +21,15 @@ public class ImpactAnalysisTest {
     }
 
     @Test
-    public void test() {
+    public void test() throws IOException {
         new App().buildImpactAnalysisModel(project);
-        //TraceBasedRegressionTestSelection traceBasedTestSelection = new TraceBasedRegressionTestSelection(project, null, null, null, null);
-        //Collection<String> stringCollection = traceBasedTestSelection.getAllImpactedTest("com.tblf.App$method");
-        //Assert.assertTrue(stringCollection.size() == 4);
+        TraceBasedRegressionTestSelection traceBasedTestSelection = new TraceBasedRegressionTestSelection(project, null, null, null, null);
+        Collection<String> stringCollection = traceBasedTestSelection.getAllImpactedTest("com.tblf.App$method");
+
+        Assert.assertTrue(stringCollection.contains("com.tblf.AppTest$testDirectCall"));
+        Assert.assertTrue(stringCollection.contains("com.tblf.AppTest$testSuperCall"));
+        Assert.assertTrue(stringCollection.contains("com.tblf.AppTest$testMultipleCall"));
+
     }
 
     @After
