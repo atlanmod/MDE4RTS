@@ -28,9 +28,9 @@ public class CLITest {
 
     @Before
     public void setUp() throws IOException {
-        File projectZip = new File("src/test/resources/ProjectForTestingAppClass.zip");
+        File projectZip = new File("src/test/resources/DummyProject.zip");
         FileUtils.unzip(projectZip);
-        project = new File("src/test/resources/ProjectForTestingAppClass");
+        project = new File("src/test/resources/DummyProject");
     }
 
     @Test
