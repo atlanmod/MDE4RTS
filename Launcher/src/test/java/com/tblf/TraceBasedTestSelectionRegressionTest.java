@@ -3,10 +3,7 @@ package com.tblf;
 import com.tblf.compare.GitCaller;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +27,7 @@ public class TraceBasedTestSelectionRegressionTest {
     @Test
     public void checkAnalyze() throws IOException, GitAPIException {
 
-        Collection<String> testImpacted = new GitCaller(project, project).traceBasedCommitComparison("master~1", "master");
+        Collection<String> testImpacted = new GitCaller(project, project).diffsSinceLastCommit();
         testImpacted.removeIf(Objects::isNull);
         Assert.assertTrue(testImpacted.contains("com.tblf.AppTest$testOne"));
         Assert.assertTrue(testImpacted.contains("com.tblf.AppTest$testTwo"));

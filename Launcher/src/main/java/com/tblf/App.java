@@ -9,7 +9,11 @@ import com.tblf.parsing.parsingBehaviors.EmptyParsingBehavior;
 import org.apache.commons.cli.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.Collection;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -84,7 +88,15 @@ public class App {
      */
     public void buildImpactAnalysisModel(File file) {
         new MavenRunner(new File(file, "pom.xml")).compilePom();
-        File agent = new File("../Agent/target/Agent-1.0-SNAPSHOT-jar-with-dependencies.jar");
+        File agent = null;
+        try {
+            agent = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            if (agent.isDirectory()) {
+                agent = new File("target/mde4rts-jar-with-dependencies.jar");
+            }
+        } catch (URISyntaxException e) {
+            LOGGER.log(Level.WARNING, "Could not get the Agent location", e);
+        }
 
         if (!agent.exists())
             throw new RuntimeException("No java agent found");

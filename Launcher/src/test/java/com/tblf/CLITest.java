@@ -65,6 +65,8 @@ public class CLITest {
         Logger.getLogger(App.class.getName()).addHandler(new TestHandler(strings));
 
         App.main(new String[]{"-rts", "-project", project.getAbsolutePath()});
+
+        strings.forEach(System.out::println);
         Assert.assertTrue(strings.contains("com.tblf.AppTest$shouldAnswerWithTrue"));
     }
 

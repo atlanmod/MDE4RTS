@@ -74,6 +74,22 @@ public class TraceBasedRegressionTestSelection extends RegressionTestSelection {
         return tests;
     }
 
+    /**
+     * read all the text in the queue, in every topic.
+     * @return
+     */
+    public Collection<String> getAllMethods() {
+        ExcerptTailer excerptTailer = queue.createTailer();
+        Wire wire;
+        Collection<String> methods = new HashSet<>();
+
+        while ((wire = excerptTailer.readingDocument().wire()) != null) {
+            wire.readMap().keySet().forEach(System.out::println);
+        }
+
+        return methods;
+    }
+
     @Override
     Collection<String> getImpactsOfMethodUpdate(MethodDeclaration methodDeclaration) {
         LOGGER.log(Level.INFO, ParsingUtils.getQualifiedName(methodDeclaration) + " update impacts computed");
@@ -95,7 +111,7 @@ public class TraceBasedRegressionTestSelection extends RegressionTestSelection {
         }
 
         if (methodDeclaration.getAnnotations().stream().map(NodeWithName::getNameAsString).anyMatch("Override"::equals)) {
-            System.out.println("TODO: GET IMPACTS OF "+ ParsingUtils.getQualifiedName(methodDeclaration).toUpperCase()+" AT PARENT CLASS LEVEL");
+            //TODO GET IMPACTS OF "+ ParsingUtils.getQualifiedName(methodDeclaration).toUpperCase()+" AT PARENT CLASS LEVEL");
             String methodOverridenQualifiedName = ParsingUtils.getMethodOverriden(methodDeclaration, gitFolder);
             return getAllImpactedTest(methodOverridenQualifiedName);
         }
