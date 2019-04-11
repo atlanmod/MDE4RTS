@@ -24,7 +24,9 @@ public class ImpactAnalysisTest {
     public void test() throws IOException {
         new App().buildImpactAnalysisModel(project);
         TraceBasedRegressionTestSelection traceBasedTestSelection = new TraceBasedRegressionTestSelection(project, null, null, null, null);
-        Collection<String> stringCollection = traceBasedTestSelection.getAllImpactedTest("com.tblf.App$method");
+        Collection<String> stringCollection = traceBasedTestSelection.getAllImpactedTest("com.tblf.SuperApp$main");
+
+        stringCollection.forEach(System.out::println);
 
         Assert.assertTrue(stringCollection.contains("com.tblf.AppTest$testDirectCall"));
         Assert.assertTrue(stringCollection.contains("com.tblf.AppTest$testSuperCall"));
