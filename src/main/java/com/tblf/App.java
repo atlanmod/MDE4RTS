@@ -6,15 +6,14 @@ import com.tblf.instrumentation.InstrumentationType;
 import com.tblf.junitrunner.MavenRunner;
 import com.tblf.parsing.TraceType;
 import com.tblf.parsing.parsingBehaviors.EmptyParsingBehavior;
-import com.tblf.processors.TopicCallGraphProcessor;
-import com.tblf.utils.MavenUtils;
-import com.tblf.utils.ModelUtils;
 import org.apache.commons.cli.*;
-import org.eclipse.emf.ecore.resource.ResourceSet;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -57,7 +56,9 @@ public class App {
         if (commandLine.hasOption("model")) {
             new App().buildStaticModel(file);
         } else if (commandLine.hasOption("iamodel")) {    //Impact Analysis Model
-            new App().buildImpactAnalysisModel(file);
+            App app = new App();
+            app.buildStaticModel(file);
+            app.buildImpactAnalysisModel(file);
         }
 
         if (commandLine.hasOption("rts")) {
@@ -86,16 +87,24 @@ public class App {
      * @param file the {@link File} location of the project under analysis
      */
     public void buildImpactAnalysisModel(File file) {
-        buildStaticModel(file);
-
         new MavenRunner(new File(file, "pom.xml")).compilePom();
+        File agent = null;
+        try {
+            agent = new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+            if (agent.isDirectory()) {
+                agent = new File("target/mde4rts-jar-with-dependencies.jar");
+            }
+        } catch (URISyntaxException e) {
+            LOGGER.log(Level.WARNING, "Could not get the Agent location", e);
+        }
 
-        MavenUtils.addDependencyToPom(new File(file,"pom.xml"), "com.tblf", "MDE4RTS", "1.0-SNAPSHOT");
+        if (!agent.exists())
+            throw new RuntimeException("No java agent found");
 
         AnalysisLauncher analysisLauncher = new AnalysisLauncher(file);
-        analysisLauncher.setInstrumentationType(InstrumentationType.BYTECODE);
+        analysisLauncher.setInstrumentationType(InstrumentationType.AGENT);
         analysisLauncher.setTraceType(TraceType.QUEUE);
-        analysisLauncher.registerProcessor(new TopicCallGraphProcessor());
+        analysisLauncher.registerProcessor(agent);
         analysisLauncher.registerBehavior(new EmptyParsingBehavior());
         analysisLauncher.run();
     }

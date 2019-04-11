@@ -15,7 +15,6 @@ public class Monitor {
 
     public Monitor(String methodQN) {
         if (!called.contains(methodQN)) {
-            System.out.println("Called");
             Calls.getTracer().write(methodQN.concat("\n"));
             called.add(methodQN);
         }

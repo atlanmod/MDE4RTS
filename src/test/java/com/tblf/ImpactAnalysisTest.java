@@ -21,11 +21,15 @@ public class ImpactAnalysisTest {
     }
 
     @Test
-    public void test() {
+    public void test() throws IOException {
         new App().buildImpactAnalysisModel(project);
         TraceBasedRegressionTestSelection traceBasedTestSelection = new TraceBasedRegressionTestSelection(project, null, null, null, null);
         Collection<String> stringCollection = traceBasedTestSelection.getAllImpactedTest("com.tblf.App$method");
-        Assert.assertTrue(stringCollection.size() == 4);
+
+        Assert.assertTrue(stringCollection.contains("com.tblf.AppTest$testDirectCall"));
+        Assert.assertTrue(stringCollection.contains("com.tblf.AppTest$testSuperCall"));
+        Assert.assertTrue(stringCollection.contains("com.tblf.AppTest$testMultipleCall"));
+
     }
 
     @After
