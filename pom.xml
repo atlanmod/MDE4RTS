@@ -119,24 +119,23 @@
 	<plugin>
 	   <groupId>org.apache.maven.plugins</groupId>
 	   <artifactId>maven-install-plugin</artifactId>
-	   <version>2.5.1</version>
-	   <configuration>
-	      <groupId>org.omg.smm</groupId>
-	      <artifactId>org.omg.smm</artifactId>
-	      <version>1.1.1</version>
-	      <packaging>jar</packaging>
-	      <file>${basedir}/src/main/resources/org.omg.smm-1.1.1.jar</file>
-	      <generatePom>true</generatePom>
-	   </configuration>
-	   <executions>
-	      <execution>
-		 <id>install-jar-lib</id>
-		 <goals>
-		    <goal>install-file</goal>
-		 </goals>
-		 <phase>validate</phase>
-	      </execution>
-	   </executions>
+	   <version>3.0.0-M1</version>
+		<executions>
+                    <execution>
+                        <id>install-kdm-source-extension</id>
+                        <phase>validate</phase>
+                        <configuration>
+		                <file>${basedir}/src/main/resources/org.omg.smm-1.1.1.jar</file>
+				<groupId>org.omg.smm</groupId>
+				<artifactId>org.omg.smm</artifactId>
+				<version>1.1.1</version>
+				<packaging>jar</packaging>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                </executions>
 	</plugin>
 
       </plugins>
