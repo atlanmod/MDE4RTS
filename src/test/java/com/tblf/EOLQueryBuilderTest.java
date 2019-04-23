@@ -25,7 +25,7 @@ public class EOLQueryBuilderTest {
     @Test
     public void checkQetQualifiedNameWithImportAndClass() throws FileNotFoundException {
         final AtomicInteger atomicInteger = new AtomicInteger(0);
-        CompilationUnit compilationUnit = JavaParser.parse(new File("src/test/resources/classes/App.java"));
+        CompilationUnit compilationUnit = JavaParser.parse(new File("src/test/resources/classes/MyApp.java"));
         compilationUnit.getChildNodesByType(MethodDeclaration.class).forEach(methodDeclaration -> {
             atomicInteger.incrementAndGet();
             String methodName = methodDeclaration.getNameAsString();

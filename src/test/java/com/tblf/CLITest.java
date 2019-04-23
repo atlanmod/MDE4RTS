@@ -53,7 +53,7 @@ public class CLITest {
     @Test
     public void testRtsNoOption() throws ParseException, IOException {
         App.main(new String[]{"-model", "-project", project.getAbsolutePath()});
-        File file = new File(project, "src/main/java/com/tblf/App.java");
+        File file = new File(project, "src/main/java/com/tblf/MyApp.java");
         new App().buildImpactAnalysisModel(project);
         if (file.exists()) {
             String content = org.apache.commons.io.FileUtils.readFileToString(file, Charset.defaultCharset());
@@ -73,7 +73,7 @@ public class CLITest {
     @Test
     public void testRtsWithCommit() throws ParseException, IOException, GitAPIException {
         App.main(new String[]{"-model", "-project", project.getAbsolutePath()});
-        File file = new File(project, "src/main/java/com/tblf/App.java");
+        File file = new File(project, "src/main/java/com/tblf/MyApp.java");
         new App().buildImpactAnalysisModel(project);
 
         if (file.exists()) {
