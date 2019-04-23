@@ -81,6 +81,7 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
     </repositories>
+
     <build>
         <finalName>mde4rts</finalName>
         <plugins>
@@ -103,30 +104,7 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <archive>
-                                <manifestEntries>
-                                    <Premain-Class>com.tblf.Agent</Premain-Class>
-                                </manifestEntries>
-                                <manifest>
-                                    <mainClass>com.tblf.App</mainClass>
-                                </manifest>
-                            </archive>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.1</version>
@@ -137,6 +115,32 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
+
+	<plugin>
+	   <groupId>org.apache.maven.plugins</groupId>
+	   <artifactId>maven-install-plugin</artifactId>
+	   <version>2.5.1</version>
+	   <configuration>
+	      <groupId>org.omg.smm</groupId>
+	      <artifactId>org.omg.smm</artifactId>
+	      <version>1.1.1</version>
+	      <packaging>jar</packaging>
+	      <file>${basedir}/src/main/resources/org.omg.smm-1.1.1.jar</file>
+	      <generatePom>true</generatePom>
+	   </configuration>
+	   <executions>
+	      <execution>
+		 <id>install-jar-lib</id>
+		 <goals>
+		    <goal>install-file</goal>
+		 </goals>
+		 <phase>validate</phase>
+	      </execution>
+	   </executions>
+	</plugin>
+
+      </plugins>
+
     </build>
+
 </project>
