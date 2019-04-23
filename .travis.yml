@@ -1,0 +1,24 @@
+language: java
+
+jdk:
+    - oraclejdk8
+
+notifications:
+    email: true
+
+install:
+    -
+
+script:
+	- git clone https://github.com/atlanmod/dynamic-analyzer
+	- cd dynamic-analyzer
+	- git clone https://github.com/mondo-project/mondo-hawk/
+    - cd mondo-hawk && ./install-maven-deps.sh
+    - mvn -f pom-plain.xml install
+    - cd $TRAVIS_BUILD_DIR/ && git clone https://github.com/andsel/moquette.git
+    - cd moquette && ./gradlew install
+    - cd $TRAVIS_BUILD_DIR/ && mvn clean
+    - mvn install -Ptravis
+    - cd ..
+	- mvn validate
+	- mvn install
