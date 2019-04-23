@@ -19,4 +19,4 @@ script:
     - cd dynamicAnalyser && mvn clean && mvn install -Ptravis -DskipTests=true
     - cd $TRAVIS_BUILD_DIR/
     - mvn validate
-    - mvn install
+    - mvn install -DskipTests=true
