@@ -10,8 +10,8 @@ install:
     -
 
 script:
-    - git clone https://github.com/atlanmod/dynamic-analyzer
-    - cd dynamic-analyzer
+    - git clone https://github.com/atlanmod/dynamicAnalyser
+    - cd dynamicAnalyser
     - git clone https://github.com/mondo-project/mondo-hawk/
     - cd mondo-hawk && ./install-maven-deps.sh
     - mvn -f pom-plain.xml install -DskipTests=true
