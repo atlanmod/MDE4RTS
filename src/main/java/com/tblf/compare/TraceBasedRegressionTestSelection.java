@@ -48,7 +48,7 @@ public class TraceBasedRegressionTestSelection extends RegressionTestSelection {
      * @return a {@link Collection} of {@link String}
      */
     public Collection<String> getAllImpactedTest(String qualifiedName) {
-        ExcerptTailer excerptTailer = queue.createTailer();
+        ExcerptTailer excerptTailer = queue.createTailer().toStart();
         Wire wire;
         Collection<String> impactedTests = new HashSet<>();
         while ((wire = excerptTailer.readingDocument().wire()) != null) {
@@ -75,7 +75,7 @@ public class TraceBasedRegressionTestSelection extends RegressionTestSelection {
     }
 
     /**
-     * read all the text in the queue, in every topic.
+     * Read all the topics
      * @return
      */
     public Collection<String> getAllMethods() {

@@ -6,6 +6,7 @@ import com.tblf.instrumentation.InstrumentationType;
 import com.tblf.junitrunner.MavenRunner;
 import com.tblf.parsing.TraceType;
 import com.tblf.parsing.parsingBehaviors.EmptyParsingBehavior;
+import com.tblf.parsing.parsingBehaviors.ParsingBehavior;
 import org.apache.commons.cli.*;
 
 import java.io.File;
@@ -57,7 +58,6 @@ public class App {
             new App().buildStaticModel(file);
         } else if (commandLine.hasOption("iamodel")) {    //Impact Analysis Model
             App app = new App();
-            app.buildStaticModel(file);
             app.buildImpactAnalysisModel(file);
         }
 

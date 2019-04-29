@@ -20,7 +20,6 @@ public class TopicMonitor {
 
     @Advice.OnMethodEnter
     static void enter(@Advice.Origin Method method) throws IOException {
-        System.out.println("Executing SUT method: "+method.toGenericString());
         Calls.getTracer().write(MonitorUtils.getMethodQualifiedName(method), runningTest); //May need opt
     }
 

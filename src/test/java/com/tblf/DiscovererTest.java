@@ -14,18 +14,18 @@ public class DiscovererTest {
 
     @Before
     public void setUp() throws IOException {
-        FileUtils.unzip(new File("src/test/resources/SimpleProject.zip"));
-        project = new File("src/test/resources/SimpleProject");
+        FileUtils.unzip(new File("src/test/resources/TestImpactAnalysis.zip"));
+        project = new File("src/test/resources/TestImpactAnalysis");
         Assert.assertTrue(project.exists());
-        new File(project, "SimpleProject_java.xmi").delete();
+        new File(project, "TestImpactAnalysis_java.xmi").delete();
 
     }
 
     @Test
     public void testDiscover() {
-        Assert.assertFalse(new File(project, "SimpleProject_java.xmi").exists());
+        Assert.assertFalse(new File(project, "TestImpactAnalysis_java.xmi").exists());
         new Discoverer(project).run();
-        Assert.assertTrue(new File(project, "SimpleProject_java.xmi").exists());
+        Assert.assertTrue(new File(project, "TestImpactAnalysis_java.xmi").exists());
     }
 
     @After

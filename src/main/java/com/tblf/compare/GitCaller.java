@@ -72,35 +72,6 @@ public class GitCaller {
      *  @param currentCommitID the first commit ID
      * @param nextCommitID    the next commit ID
      */
-    public Collection<String> modelBasedCommitComparison(String currentCommitID, String nextCommitID) {
-
-        LOGGER.info("Comparing commits "+currentCommitID+" and "+nextCommitID);
-        try {
-            ObjectId current = repository.resolve(currentCommitID);
-            ObjectId future = repository.resolve(nextCommitID);
-
-            if (current == null || future == null) {
-                throw new IOException("Cannot resolve the commits: " + current + " -> " + future);
-            }
-
-            oldTree = new RevWalk(repository).parseCommit(current).getTree();
-            newTree = new RevWalk(repository).parseCommit(future).getTree();
-
-            DiffFormatter diffFormatter = createDiffFormater();
-            List<DiffEntry> diffEntries = diffFormatter.scan(oldTree, newTree);
-            return new ModelBasedRegressionTestSelection(gitFolder, pomFolder, diffFormatter, diffEntries, current).getAllMethodsImpacted();
-
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Couldn't build the revision tree", e);
-        }
-        return new ArrayList<>();
-    }
-
-    /**
-     * Compare two given commit ID
-     *  @param currentCommitID the first commit ID
-     * @param nextCommitID    the next commit ID
-     */
     public Collection<String> traceBasedCommitComparison(String currentCommitID, String nextCommitID) {
 
         LOGGER.info("Comparing commits "+currentCommitID+" and "+nextCommitID);
