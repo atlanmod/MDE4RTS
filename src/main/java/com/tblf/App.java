@@ -58,7 +58,6 @@ public class App {
             new App().buildStaticModel(file);
         } else if (commandLine.hasOption("iamodel")) {    //Impact Analysis Model
             App app = new App();
-            app.buildStaticModel(file);
             app.buildImpactAnalysisModel(file);
         }
 

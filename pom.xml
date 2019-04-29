@@ -112,6 +112,9 @@
                         <manifest>
                             <mainClass>com.tblf.App</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Premain-Class>com.tblf.Agent</Premain-Class>
+                        </manifestEntries>
                     </archive>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
