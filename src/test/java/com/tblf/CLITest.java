@@ -5,10 +5,7 @@ import org.apache.commons.cli.ParseException;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -43,6 +40,7 @@ public class CLITest {
         App.main(new String[]{});
     }
 
+    @Ignore
     @Test
     public void testModel() throws ParseException, IOException {
         Assert.assertTrue(Files.walk(project.toPath()).noneMatch(path -> path.endsWith(".xmi")));
@@ -53,7 +51,7 @@ public class CLITest {
     @Test
     public void testRtsNoOption() throws ParseException, IOException {
         App.main(new String[]{"-model", "-project", project.getAbsolutePath()});
-        File file = new File(project, "src/main/java/com/tblf/MyApp.java");
+        File file = new File(project, "src/main/java/com/tblf/App.java");
         new App().buildImpactAnalysisModel(project);
         if (file.exists()) {
             String content = org.apache.commons.io.FileUtils.readFileToString(file, Charset.defaultCharset());
@@ -66,14 +64,13 @@ public class CLITest {
 
         App.main(new String[]{"-rts", "-project", project.getAbsolutePath()});
 
-        strings.forEach(System.out::println);
         Assert.assertTrue(strings.contains("com.tblf.AppTest$shouldAnswerWithTrue"));
     }
 
     @Test
     public void testRtsWithCommit() throws ParseException, IOException, GitAPIException {
         App.main(new String[]{"-model", "-project", project.getAbsolutePath()});
-        File file = new File(project, "src/main/java/com/tblf/MyApp.java");
+        File file = new File(project, "src/main/java/com/tblf/App.java");
         new App().buildImpactAnalysisModel(project);
 
         if (file.exists()) {

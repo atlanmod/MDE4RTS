@@ -82,6 +82,7 @@ public abstract class RegressionTestSelection {
     public Collection<String> getAllMethodsImpacted() {
 
         diffEntryCollection.forEach(diffEntry -> {
+            System.out.println(diffEntry);
             try {
                 // The file is not a Java File.
                 if (diffEntry.getOldPath().equals("/dev/null") && diffEntry.getNewPath().endsWith(".java")) {
@@ -114,8 +115,8 @@ public abstract class RegressionTestSelection {
      * @throws IOException if the {@link DiffEntry} cannot be analyzed
      */
     private void identifyModificationType(DiffEntry diffEntry) throws IOException {
-        Map<String, MethodDeclaration> newFileMethods = getOrParseFileNewRev(diffEntry).getChildNodesByType(MethodDeclaration.class).stream().collect(Collectors.toMap(ParsingUtils::getQualifiedName, o -> o));
-        Map<String, MethodDeclaration> oldFileMethods = getOrParseFileOldRev(diffEntry).getChildNodesByType(MethodDeclaration.class).stream().collect(Collectors.toMap(ParsingUtils::getQualifiedName, o -> o));
+        Map<String, MethodDeclaration> newFileMethods = getOrParseFileNewRev(diffEntry).getChildNodesByType(MethodDeclaration.class).stream().collect(Collectors.toMap(ParsingUtils::getQualifiedName, o -> o, (k1, k2) -> k1));
+        Map<String, MethodDeclaration> oldFileMethods = getOrParseFileOldRev(diffEntry).getChildNodesByType(MethodDeclaration.class).stream().collect(Collectors.toMap(ParsingUtils::getQualifiedName, o -> o, (k1, k2) -> k1));
 
         newFileMethods.forEach((s, newMethod) -> {
             MethodDeclaration oldMethod = oldFileMethods.get(s);
