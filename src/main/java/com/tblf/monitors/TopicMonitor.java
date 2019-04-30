@@ -20,7 +20,10 @@ public class TopicMonitor {
 
     @Advice.OnMethodEnter
     static void enter(@Advice.Origin Method method) throws IOException {
-        Calls.getTracer().write(MonitorUtils.getMethodQualifiedName(method), runningTest); //May need opt
+        if (!methodsCalled.contains(method.toGenericString())) {
+            Calls.getTracer().write(MonitorUtils.getMethodQualifiedName(method), runningTest); //May need opt
+            methodsCalled.add(method.toGenericString());
+        }
     }
 
     //called at the end of the method
