@@ -11,13 +11,14 @@ import net.openhft.chronicle.wire.Wire;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.lib.ObjectId;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  * Select test method impacted by a sut modification only by reading the corresponding topic in the traces
@@ -25,8 +26,9 @@ import java.util.logging.Level;
 public class TraceBasedRegressionTestSelection extends RegressionTestSelection {
 
     private File trace;
-    private ChronicleQueue queue;
-
+    private DB db;
+    private ConcurrentMap<String, HashSet<String>> map;
+    private static HashSet<String> EMPTY_SET = new HashSet<>();
     /**
      * Constructor
      *
@@ -39,7 +41,8 @@ public class TraceBasedRegressionTestSelection extends RegressionTestSelection {
     public TraceBasedRegressionTestSelection(File folder, File pomFolder, DiffFormatter diffFormat, List<DiffEntry> diffEntries, ObjectId oldId) {
         super(folder, pomFolder, diffFormat, diffEntries, oldId);
         this.trace = new File(folder, "trace");
-        this.queue = SingleChronicleQueueBuilder.single(trace).build();
+        this.db = DBMaker.fileDB(this.trace).checksumHeaderBypass().fileMmapEnable().make();
+        this.map = (ConcurrentMap<String, HashSet<String>>) this.db.hashMap("map").createOrOpen();
     }
 
     /**
@@ -48,14 +51,7 @@ public class TraceBasedRegressionTestSelection extends RegressionTestSelection {
      * @return a {@link Collection} of {@link String}
      */
     public Collection<String> getAllImpactedTest(String qualifiedName) {
-        ExcerptTailer excerptTailer = queue.createTailer().toStart();
-        Wire wire;
-        Collection<String> impactedTests = new HashSet<>();
-        while ((wire = excerptTailer.readingDocument().wire()) != null) {
-            impactedTests.add(wire.read(qualifiedName).text());
-        }
-
-        return impactedTests;
+        return this.map.getOrDefault(qualifiedName, EMPTY_SET);
     }
 
     /**
@@ -63,31 +59,15 @@ public class TraceBasedRegressionTestSelection extends RegressionTestSelection {
      * @return
      */
     public Collection<String> getAllTests() {
-        ExcerptTailer excerptTailer = queue.createTailer();
-        Wire wire;
-        Collection<String> tests = new HashSet<>();
-
-        while ((wire = excerptTailer.readingDocument().wire()) != null) {
-            tests.add(wire.read().text());
-        }
-
-        return tests;
+        return this.map.values().stream().flatMap(Set::stream).collect(Collectors.toSet());
     }
 
     /**
-     * Read all the topics
-     * @return
+     * Read all the keys
+     * @return a {@link Collection} of {@link String}
      */
     public Collection<String> getAllMethods() {
-        ExcerptTailer excerptTailer = queue.createTailer();
-        Wire wire;
-        Collection<String> methods = new HashSet<>();
-
-        while ((wire = excerptTailer.readingDocument().wire()) != null) {
-            wire.readMap().keySet().forEach(System.out::println);
-        }
-
-        return methods;
+        return this.map.keySet();
     }
 
     @Override

@@ -20,7 +20,7 @@ public class TraceBasedTestSelectionRegressionTest {
         if (project.exists())
             FileUtils.deleteDirectory(project);
 
-        com.tblf.utils.FileUtils.unzip(new File("src/test/resources/TestRTSAllUpdatesQueue.zip"));
+        com.tblf.utils.FileUtils.unzip(new File("src/test/resources/TestRTSAllUpdates.zip"));
     }
 
 
@@ -39,7 +39,7 @@ public class TraceBasedTestSelectionRegressionTest {
 
     @After
     public void tearDown() throws IOException {
-     org.apache.commons.io.FileUtils.deleteDirectory(project);
+        org.apache.commons.io.FileUtils.deleteDirectory(project);
     }
 }
 

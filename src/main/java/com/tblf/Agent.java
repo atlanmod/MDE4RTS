@@ -12,10 +12,7 @@ import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.net.URISyntaxException;
 
-/**
- * Hello world!
- *
- */
+
 public class Agent
 {
     public static void premain(String args, Instrumentation instrumentation) throws IOException {

@@ -82,7 +82,6 @@ public abstract class RegressionTestSelection {
     public Collection<String> getAllMethodsImpacted() {
 
         diffEntryCollection.forEach(diffEntry -> {
-            System.out.println(diffEntry);
             try {
                 // The file is not a Java File.
                 if (diffEntry.getOldPath().equals("/dev/null") && diffEntry.getNewPath().endsWith(".java")) {
@@ -122,9 +121,11 @@ public abstract class RegressionTestSelection {
             MethodDeclaration oldMethod = oldFileMethods.get(s);
             //The method does not exist in the previous revision, so it's new
             if (oldMethod == null) {
+                LOGGER.log(Level.INFO, newMethod.getNameAsString()+" has been added.");
                 newMethods.add(newMethod);
             } else if (oldMethod.toString().length() != newMethod.toString().length() || !oldMethod.toString().equals(newMethod.toString())) {
                 //The method is different in the new revision. it has been updated
+                LOGGER.log(Level.INFO, newMethod.getNameAsString()+" has been updated.");
                 updatedMethods.add(newMethod);
             }
         });
@@ -133,6 +134,7 @@ public abstract class RegressionTestSelection {
             MethodDeclaration newMethod = newFileMethods.get(s);
             //The method does not exist in the next revision, so it has been deleted
             if (newMethod == null) {
+                LOGGER.log(Level.INFO, oldMethod.getNameAsString()+" has been deleted.");
                 deletedMethods.add(oldMethod);
             }
         });

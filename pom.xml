@@ -8,7 +8,8 @@
     <artifactId>MDE4RTS</artifactId>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
-    <name>Launcher</name>
+
+    <name>MDE4RTS</name>
     <!-- FIXME change it to the project's website -->
     <url>http://www.example.com</url>
 

@@ -103,7 +103,7 @@ public class App {
 
         AnalysisLauncher analysisLauncher = new AnalysisLauncher(file);
         analysisLauncher.setInstrumentationType(InstrumentationType.AGENT);
-        analysisLauncher.setTraceType(TraceType.QUEUE);
+        analysisLauncher.setTraceType(TraceType.MAP);
         analysisLauncher.registerProcessor(agent);
         analysisLauncher.registerBehavior(new EmptyParsingBehavior());
         analysisLauncher.run();
